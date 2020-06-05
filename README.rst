@@ -23,16 +23,15 @@ Fiducial Registration Educational Demonstration
 
 Author: Stephen Thompson
 
-Fiducial Registration Educational Demonstration is part of the `SNAPPY`_ software project, developed at the `Wellcome EPSRC Centre for Interventional and Surgical Sciences`_, part of `University College London (UCL)`_.
+Fiducial Registration Educational Demonstration is part of the `SciKit-Surgery`_ software project, developed at the `Wellcome EPSRC Centre for Interventional and Surgical Sciences`_, part of `University College London (UCL)`_.
 
-Fiducial Registration Educational Demonstration supports Python 2.7 and Python 3.6.
+Fiducial Registration Educational Demonstration is tested with Python 3.X
 
-Fiducial Registration Educational Demonstration is currently a demo project, which will add/multiply two numbers. Example usage:
+Fiducial Registration Educational Demonstration is intended to be used as part of an online tutorial in using fiducial based registration. The tutorial covers the basic theory of fiducial based registration, which is used widely in image guided interventions. The tutorial aims to help the students develop an intuitive understanding of key concepts in fiducial based registration, including Fiducial Localisation Error, Fiducial Registration Error, and Target Registration Error. 
 
 ::
 
-    python sksurgery-fred.py 5 8
-    python sksurgery-fred.py 3 6 --multiply
+    python sksurgery-fred.py
 
 Please explore the project structure, and implement your own functionality.
 
@@ -46,7 +45,7 @@ You can clone the repository using the following command:
 
 ::
 
-    git clone https://github.com/UCL/FiducialRegistrationEducationalDemonstration
+    git clone https://github.com/UCL/scikit-surgeryfred
 
 
 Running tests
@@ -109,7 +108,7 @@ Supported by `Wellcome`_ and `EPSRC`_.
 .. _`Wellcome EPSRC Centre for Interventional and Surgical Sciences`: http://www.ucl.ac.uk/weiss
 .. _`source code repository`: https://github.com/UCL/FiducialRegistrationEducationalDemonstration
 .. _`Documentation`: https://FiducialRegistrationEducationalDemonstration.readthedocs.io
-.. _`SNAPPY`: https://weisslab.cs.ucl.ac.uk/WEISS/PlatformManagement/SNAPPY/wikis/home
+.. _`SciKit-Surgery`: https://github.com/UCL/scikit-surgery/wiki
 .. _`University College London (UCL)`: http://www.ucl.ac.uk/
 .. _`Wellcome`: https://wellcome.ac.uk/
 .. _`EPSRC`: https://www.epsrc.ac.uk/
