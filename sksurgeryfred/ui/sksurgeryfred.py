@@ -10,4 +10,4 @@ def run_demo(image):
     """Run FRED"""
 
     projpoint = array([[100, 100, 100]])
-    plot_errors_interactive(image, projpoint, False)
+    plot_errors_interactive(image, projpoint)

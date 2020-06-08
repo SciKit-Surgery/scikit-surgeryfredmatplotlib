@@ -8,7 +8,7 @@ import glob
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-import skimage
+import skimage.io
 
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 
@@ -273,30 +273,29 @@ class InteractiveMeasure:
         print("distance = ", np.linalg.norm(screen_p - self.point))
 
 
-def plot_errors_interactive(image_file_name, projected_point,
-                            crop_to_image=False):
+def plot_errors_interactive(image_file_name, projected_point):
     """
     Creates a visualisation of the projected and
     detected screen points, which you can click on
     to measure distances
     """
-    #img = mpimg.imread(image_file_name)
+    img = mpimg.imread(image_file_name)
     img = skimage.io.imread(image_file_name)
-    outline, init = find_outer_contour (img)
+    outline, initial_guess = find_outer_contour(img)
 
 
-    fig, ax = plt.subplots(1, 2, figsize=(18, 8))
-    ax[0].imshow(img)
-    ax[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
-    ax[1].plot(init[:, 1], init[:, 0], '-r', lw=3)
-    ax[1].set_ylim([0, img.shape[0]])
-    ax[1].set_xlim([0, img.shape[1]])
-    ax[1].axis([0, img.shape[1], img.shape[0], 0])
-    ax[1].axis('scaled')
+    fig, subplot = plt.subplots(1, 2, figsize=(18, 8))
+    subplot[0].imshow(img)
+    subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
+    subplot[1].plot(initial_guess[:, 1], initial_guess[:, 0], '-r', lw=3)
+    subplot[1].set_ylim([0, img.shape[0]])
+    subplot[1].set_xlim([0, img.shape[1]])
+    subplot[1].axis([0, img.shape[1], img.shape[0], 0])
+    subplot[1].axis('scaled')
 
     #this is just going to show the first point in an array.
     #Could get clever and search for nearest point on click?
-    ax[0].scatter(projected_point[0, 1], projected_point[0, 2])
+    subplot[0].scatter(projected_point[0, 1], projected_point[0, 2])
 
     _ = InteractiveMeasure(fig, (projected_point[0, 1], projected_point[0, 2]))
 
