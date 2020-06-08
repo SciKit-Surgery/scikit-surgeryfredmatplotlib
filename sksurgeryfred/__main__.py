@@ -9,12 +9,12 @@ if __name__ == "__main__" and not __package__:
     # i.e. "python sksurgery-fred", we have to explicitly set the
     # module name and append the parent directory to the sys.path (see PEP 366)
     from os import path
-    __package__ = "sksurgery-fred"  # pylint: disable=redefined-builtin
+    __package__ = "sksurgeryfred"  # pylint: disable=redefined-builtin
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     sys.path.append(path.dirname(path.dirname(__file__)))
 
 # pylint: disable=wrong-import-position
-from sksurgery-fred.ui.sksurgery-fred_command_line import main
+from sksurgeryfred.ui.sksurgeryfred_command_line import main
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
