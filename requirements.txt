@@ -4,5 +4,6 @@
 # doc/requirements.rst
 numpy
 matplotlib
+scikit-image
 ipykernel
 nbsphinx
