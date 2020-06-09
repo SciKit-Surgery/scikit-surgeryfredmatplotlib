@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import skimage.io
 
+from sksurgerycore.algorithms.procrustes import orthogonal_procrustes
+
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 
 
@@ -62,8 +64,16 @@ class AddFiducialMarker:
                 self.moving_points = np.concatenate((self.moving_points, moving_point), axis = 0)
 
                 print("distance = ", np.linalg.norm(fiducial_location - self.target))
-                print(self.fixed_points)
-                print(self.moving_points)
+
+                try:
+                    rotation, translation, fre = orthogonal_procrustes (self.fixed_points, self.moving_points)
+                    print(rotation)
+                    print(translation)
+                    print(fre)
+
+                except ValueError:
+                    pass
+
 
 
 def _is_valid_fiducial(fiducial_location):
