@@ -6,6 +6,7 @@ import csv
 import xml.dom.minidom
 import glob
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import skimage.io
@@ -13,6 +14,7 @@ import skimage.io
 from sksurgerycore.algorithms.procrustes import orthogonal_procrustes
 
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
+from sksurgeryfred.algorithms.errors_2d import compute_tre_from_fle_2d
 
 
 def multiply_points_by_matrix(points_in, matrix):
@@ -39,19 +41,22 @@ class AddFiducialMarker:
     A class to handle mouse press events, adding a fiducial 
     marker.
     """
-    def __init__(self, fig, target, fixed_fle, moving_fle):
+    def __init__(self, fig, fixed_plot, moving_plot, target,  fixed_fle, moving_fle):
         self.target = target
         self.cid = fig.canvas.mpl_connect('button_press_event', self)
         self.fixed_points = np.zeros((0,3),dtype=np.float64)
         self.moving_points = np.zeros((0,3),dtype=np.float64)
         self.fixed_fle = fixed_fle
         self.moving_fle = moving_fle
+        self.fixed_plot = fixed_plot
+        self.moving_plot = moving_plot
+
+        self.tre_text = self.fixed_plot.text(210,210,'Actual TRE = {0:.3f}'.format(0))
+        self.exp_tre_text = self.fixed_plot.text(210,230,'Expected TRE = {0:.3f}'.format(math.sqrt(0)))
+        self.fre_text = self.fixed_plot.text(210,250,'FRE = {0:.3f}'.format(0))
 
     def __call__(self, event):
         if event.xdata is not None:
-            print('%s click: xdata=%f, ydata=%f' %
-                ('double' if event.dblclick else 'single',
-                event.xdata, event.ydata))
             fiducial_location = np.zeros((1, 3), dtype=np.float64)
             fiducial_location[0,0] = event.xdata
             fiducial_location[0,1] = event.ydata
@@ -59,21 +64,36 @@ class AddFiducialMarker:
             if _is_valid_fiducial(fiducial_location):
                 fixed_point = _add_guassian_fle_to_fiducial(fiducial_location, self.fixed_fle)
                 moving_point = _add_guassian_fle_to_fiducial(fiducial_location, self.moving_fle)
-                print(self.fixed_points.shape, fixed_point.shape)
                 self.fixed_points = np.concatenate((self.fixed_points, fixed_point), axis = 0)
                 self.moving_points = np.concatenate((self.moving_points, moving_point), axis = 0)
+                
+                self.fixed_plot.scatter(self.fixed_points[:, 0], self.fixed_points[:,1], s = 36, c='g')
+                self.moving_plot.scatter(self.moving_points[:, 0], self.moving_points[:,1], s = 36, c='g')
 
-                print("distance = ", np.linalg.norm(fiducial_location - self.target))
-
-                try:
+                if self.fixed_points.shape[0] > 2:
                     rotation, translation, fre = orthogonal_procrustes (self.fixed_points, self.moving_points)
-                    print(rotation)
-                    print(translation)
-                    print(fre)
+                    expected_tre = compute_tre_from_fle_2d (self.moving_points[:,0:2], 
+                                                            self.fixed_fle[0,0],
+                                                            self.target[:,0:2])
 
-                except ValueError:
-                    pass
+                    transformed_target = np.matmul(rotation, self.target.transpose()) + translation
+                    transformed_target_2d = [transformed_target[0][0], transformed_target[1][0]]
+                    self.fixed_plot.scatter(transformed_target_2d[0], transformed_target_2d[1], s = 64, c='r')
+                    actual_tre = np.linalg.norm(transformed_target_2d - self.target[:,0:2])
+                    
+                    self.tre_text.remove()
+                    self.exp_tre_text.remove()
+                    self.fre_text.remove()
 
+                    self.tre_text = self.fixed_plot.text(210,210,'Actual TRE = {0:.3f}'.format(actual_tre))
+                    self.exp_tre_text = self.fixed_plot.text(210,230,'Expected TRE = {0:.3f}'.format(math.sqrt(expected_tre)))
+                    self.fre_text = self.fixed_plot.text(210,250,'FRE = {0:.3f}'.format(fre))
+                    
+                    print("Actual TRE = ", actual_tre)
+                    print("Expected TRE = ", math.sqrt(expected_tre))
+                    print("FRE = ", fre)
+
+                plt.show()
 
 
 def _is_valid_fiducial(fiducial_location):
@@ -101,13 +121,13 @@ def plot_errors_interactive(image_file_name, target_point):
     """
     img = mpimg.imread(image_file_name)
     img = skimage.io.imread(image_file_name)
-    outline, initial_guess = find_outer_contour(img)
+    outline, _initial_guess = find_outer_contour(img)
 
 
     fig, subplot = plt.subplots(1, 2, figsize=(18, 8))
     subplot[0].imshow(img)
     subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
-    subplot[1].plot(initial_guess[:, 1], initial_guess[:, 0], '-r', lw=3)
+    #subplot[1].plot(initial_guess[:, 1], initial_guess[:, 0], '-r', lw=3)
     subplot[1].set_ylim([0, img.shape[0]])
     subplot[1].set_xlim([0, img.shape[1]])
     subplot[1].axis([0, img.shape[1], img.shape[0], 0])
@@ -122,7 +142,7 @@ def plot_errors_interactive(image_file_name, target_point):
     fixed_fle[0,0] = 2.0
     fixed_fle[0,1] = 2.0
 
-    _ = AddFiducialMarker(fig, target_point, fixed_fle, moving_fle)
+    _ = AddFiducialMarker(fig, subplot[1], subplot[0], target_point, fixed_fle, moving_fle)
 
     plt.show()
 
