@@ -4,10 +4,10 @@
 
 from numpy import array
 from sksurgeryfred.algorithms.camera_calibration import \
-                plot_errors_interactive
+                plot_errors_interactive, make_target_point
 
 def run_demo(image):
     """Run FRED"""
 
-    projpoint = array([[100, 100, 100]])
-    plot_errors_interactive(image, projpoint)
+    target = make_target_point()
+    plot_errors_interactive(image, target)
