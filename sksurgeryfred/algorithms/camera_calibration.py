@@ -14,7 +14,9 @@ import skimage.io
 from sksurgerycore.algorithms.procrustes import orthogonal_procrustes
 
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
-from sksurgeryfred.algorithms.errors_2d import compute_tre_from_fle_2d
+from sksurgeryfred.algorithms.errors_2d import compute_tre_from_fle_2d, \
+                                               compute_fre_2d, \
+                                               expected_absolute_value_of_normal
 
 
 def multiply_points_by_matrix(points_in, matrix):
@@ -42,6 +44,15 @@ class AddFiducialMarker:
     marker.
     """
     def __init__(self, fig, fixed_plot, moving_plot, target,  fixed_fle, moving_fle):
+        if not np.all(moving_fle == 0.0):
+            raise NotImplementedError ("Currently we only support zero fle ")
+
+        if not fixed_fle[0,0] == fixed_fle[0,1]:
+            raise NotImplementedError ("Currently we only support isotropic fle ")
+        
+        if not fixed_fle[0,2] == 0:
+            raise NotImplementedError ("Currently we only 2D fle ")
+
         self.target = target
         self.cid = fig.canvas.mpl_connect('button_press_event', self)
         self.fixed_points = np.zeros((0,3),dtype=np.float64)
@@ -51,9 +62,11 @@ class AddFiducialMarker:
         self.fixed_plot = fixed_plot
         self.moving_plot = moving_plot
 
+        self.fids_text = self.fixed_plot.text(210,190,'Number of fids = {0:}'.format(0))
         self.tre_text = self.fixed_plot.text(210,210,'Actual TRE = {0:.3f}'.format(0))
         self.exp_tre_text = self.fixed_plot.text(210,230,'Expected TRE = {0:.3f}'.format(math.sqrt(0)))
         self.fre_text = self.fixed_plot.text(210,250,'FRE = {0:.3f}'.format(0))
+        self.exp_fre_text = self.fixed_plot.text(210,270,'Expected FRE = {0:.3f}'.format(0))
 
     def __call__(self, event):
         if event.xdata is not None:
@@ -69,12 +82,17 @@ class AddFiducialMarker:
                 
                 self.fixed_plot.scatter(self.fixed_points[:, 0], self.fixed_points[:,1], s = 36, c='g')
                 self.moving_plot.scatter(self.moving_points[:, 0], self.moving_points[:,1], s = 36, c='g')
-
+                
+                self.fids_text.remove()
+                self.fids_text = self.fixed_plot.text(210,190,'Number of fids = {0:}'.format(self.fixed_points.shape[0]))
                 if self.fixed_points.shape[0] > 2:
                     rotation, translation, fre = orthogonal_procrustes (self.fixed_points, self.moving_points)
+                    mean_fle = expected_absolute_value_of_normal(self.fixed_fle)
+                    mean_fle_squared = mean_fle * mean_fle
                     expected_tre = compute_tre_from_fle_2d (self.moving_points[:,0:2], 
-                                                            self.fixed_fle[0,0],
+                                                            mean_fle_squared,
                                                             self.target[:,0:2])
+                    expected_fre = math.sqrt(compute_fre_2d(self.moving_points[:,0:2], mean_fle_squared))
 
                     transformed_target = np.matmul(rotation, self.target.transpose()) + translation
                     transformed_target_2d = [transformed_target[0][0], transformed_target[1][0]]
@@ -84,10 +102,12 @@ class AddFiducialMarker:
                     self.tre_text.remove()
                     self.exp_tre_text.remove()
                     self.fre_text.remove()
+                    self.exp_fre_text.remove()
 
                     self.tre_text = self.fixed_plot.text(210,210,'Actual TRE = {0:.3f}'.format(actual_tre))
                     self.exp_tre_text = self.fixed_plot.text(210,230,'Expected TRE = {0:.3f}'.format(math.sqrt(expected_tre)))
                     self.fre_text = self.fixed_plot.text(210,250,'FRE = {0:.3f}'.format(fre))
+                    self.exp_fre_text = self.fixed_plot.text(210,270,'Expected FRE = {0:.3f}'.format(expected_fre))
                     
                     print("Actual TRE = ", actual_tre)
                     print("Expected TRE = ", math.sqrt(expected_tre))
