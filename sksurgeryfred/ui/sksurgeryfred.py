@@ -2,7 +2,6 @@
 
 """User interfaces for sksurgeryFRED"""
 
-from numpy import array
 from sksurgeryfred.algorithms.camera_calibration import \
                 plot_errors_interactive, make_target_point
 

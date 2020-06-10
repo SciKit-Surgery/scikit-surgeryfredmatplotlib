@@ -1,9 +1,11 @@
 #  -*- coding: utf-8 -*-
 
-""" Functions (in 2d) for point based registration using Orthogonal Procrustes. """
+"""
+Functions (in 2d) for point based registration using Orthogonal Procrustes.
+"""
 
-import numpy as np
 import math
+import numpy as np
 import sksurgerycore.algorithms.vector_math as vm
 
 
@@ -21,7 +23,7 @@ def compute_tre_from_fle_2d(fiducials, mean_fle_squared, target_point):
     :return: mean TRE squared
     """
     # pylint: disable=literal-comparison
-    
+
     dimension = 2
     if not isinstance(fiducials, np.ndarray):
         raise TypeError("fiducials is not a numpy array'")
@@ -68,25 +70,24 @@ def compute_tre_from_fle_2d(fiducials, mean_fle_squared, target_point):
 
 def compute_fre_2d(fiducials, mean_fle_squared):
     """
-    Equation 10 from 
+    Equation 10 from
     `Fitzpatrick (1998), equation 46 <http://dx.doi.org/10.1109/42.736021>`_.
     from Sibson [23]
     """
-    print (float(fiducials.shape[0]))
-    print (mean_fle_squared)
-    fre_sq = ( 1 - (2.0 / float(fiducials.shape[0]))) * mean_fle_squared
-    
+    fre_sq = (1 - (2.0 / float(fiducials.shape[0]))) * mean_fle_squared
+
     return fre_sq
 
-def expected_absolute_value_of_normal (std_devs):
+
+def expected_absolute_value(std_devs):
     """
-    Returns the expected absolute value of a normal 
-    distribution with mean 0 and standard deviation std_dev
+    Returns the expected absolute value of a normal
+    distribution with mean 0 and standard deviations std_dev
     see https://en.wikipedia.org/wiki/Folded_normal_distribution
     """
 
-    #have we got the maths quite right here. fle is 1D, mean_fle_squared if 2D? Check with a unit test
-    
+    #have we got the maths quite right here. fle is 1D,
+    #mean_fle_squared if 2D? Check with a unit test
+
     std_dev_1d = np.linalg.norm(std_devs[0])
     return math.sqrt(2.0 / math.pi) * std_dev_1d
-
