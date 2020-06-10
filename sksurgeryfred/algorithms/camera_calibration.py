@@ -15,6 +15,136 @@ from sksurgeryfred.algorithms.errors_2d import compute_tre_from_fle_2d, \
                                                compute_fre_2d, \
                                                expected_absolute_value
 
+
+class PointBasedRegistration:
+    """
+    Does the registration and assoctiated measures
+    """
+
+    def __init__(self, target, fixed_fle, moving_fle):
+        """
+        :params target: 1x3 target point
+        :params fixed_fle: the standard deviations of the fixed image fle
+        :params moving_fle: the standard deviations of the moving image fle
+        """
+        if not np.all(moving_fle == 0.0):
+            raise NotImplementedError("Currently we only support zero fle ")
+        if not fixed_fle[0, 0] == fixed_fle[0, 1]:
+            raise NotImplementedError("We only support isotropic fle")
+        if not fixed_fle[0, 2] == 0:
+            raise NotImplementedError("Currently we only 2D fle ")
+
+        self.target = target
+        self.fixed_fle = fixed_fle
+        self.moving_fle = moving_fle
+
+    def register(self, fixed_points, moving_points):
+        """
+        Does the registration
+        """
+        success = False
+        fre = 0.0
+        mean_fle = 0.0
+        expected_tre = 0.0
+        expected_fre = 0.0
+        transformed_target_2d = [-1.0, -1.0]
+        actual_tre = 0.0
+
+        if fixed_points.shape[0] > 2:
+            rotation, translation, fre = orthogonal_procrustes(
+                fixed_points, moving_points)
+            mean_fle = expected_absolute_value(self.fixed_fle)
+            mean_fle_squared = mean_fle * mean_fle
+            expected_tre = compute_tre_from_fle_2d(
+                moving_points[:, 0:2],
+                mean_fle_squared,
+                self.target[:, 0:2])
+            expected_fre = math.sqrt(
+                compute_fre_2d(moving_points[:, 0:2],
+                               mean_fle_squared))
+
+            transformed_target = np.matmul(rotation,
+                                           self.target.transpose()) + \
+                                           translation
+            transformed_target_2d = [transformed_target[0][0],
+                                     transformed_target[1][0]]
+            actual_tre = np.linalg.norm(
+                transformed_target_2d - self.target[:, 0:2])
+            success = True
+
+        return [success, fre, mean_fle, expected_tre, expected_fre,
+                transformed_target_2d, actual_tre]
+
+
+class PlotRegistrations():
+    """
+    Plots the results of registrations
+    """
+
+    def __init__(self, fixed_plot, moving_plot):
+        """
+        :params fixed_plot: the fixed image subplot
+        :params moving_plot: the moving image subplot
+        """
+
+        self.fixed_plot = fixed_plot
+        self.moving_plot = moving_plot
+
+        self.fids_text = self.fixed_plot.text(
+            210, 190, 'Number of fids = {0:}'.format(0))
+        self.tre_text = self.fixed_plot.text(
+            210, 210, 'Actual TRE = {0:.3f}'.format(0))
+        self.exp_tre_text = self.fixed_plot.text(
+            210, 230, 'Expected TRE = {0:.3f}'.format(math.sqrt(0)))
+        self.fre_text = self.fixed_plot.text(
+            210, 250, 'FRE = {0:.3f}'.format(0))
+        self.exp_fre_text = self.fixed_plot.text(
+            210, 270, 'Expected FRE = {0:.3f}'.format(0))
+
+    def plot_fiducials(self, fixed_points, moving_points):
+        """
+        Updates plot with fiducial data
+        """
+
+        self.fixed_plot.scatter(fixed_points[:, 0],
+                                fixed_points[:, 1],
+                                s=36, c='g')
+        self.moving_plot.scatter(moving_points[:, 0],
+                                 moving_points[:, 1],
+                                 s=36, c='g')
+
+        self.fids_text.remove()
+        self.fids_text = self.fixed_plot.text(
+            210, 190,
+            'Number of fids = {0:}'.format(fixed_points.shape[0]))
+
+
+    def plot_results(self, actual_tre, expected_tre,
+                     fre, expected_fre, transformed_target_2d):
+        """
+        Plots the results of a registration
+        """
+        self.tre_text.remove()
+        self.exp_tre_text.remove()
+        self.fre_text.remove()
+        self.exp_fre_text.remove()
+
+        self.tre_text = self.fixed_plot.text(
+            210, 210, 'Actual TRE = {0:.3f}'.format(actual_tre))
+        self.exp_tre_text = self.fixed_plot.text(
+            210, 230,
+            'Expected TRE = {0:.3f}'.format(
+                math.sqrt(expected_tre)))
+        self.fre_text = self.fixed_plot.text(
+            210, 250, 'FRE = {0:.3f}'.format(fre))
+        self.exp_fre_text = self.fixed_plot.text(
+            210, 270, 'Expected FRE = {0:.3f}'.format(expected_fre))
+
+        self.fixed_plot.scatter(transformed_target_2d[0],
+                                transformed_target_2d[1],
+                                s=64, c='r')
+
+
 class AddFiducialMarker:
     """
     A class to handle mouse press events, adding a fiducial
@@ -31,33 +161,12 @@ class AddFiducialMarker:
         :params fixed_fle: the standard deviations of the fixed image fle
         :params moving_fle: the standard deviations of the moving image fle
         """
-        if not np.all(moving_fle == 0.0):
-            raise NotImplementedError("Currently we only support zero fle ")
 
-        if not fixed_fle[0, 0] == fixed_fle[0, 1]:
-            raise NotImplementedError("We only support isotropic fle")
-        if not fixed_fle[0, 2] == 0:
-            raise NotImplementedError("Currently we only 2D fle ")
-
-        self.target = target
+        self.pbr = PointBasedRegistration(target, fixed_fle, moving_fle)
+        self.plotter = PlotRegistrations(fixed_plot, moving_plot)
         self.cid = fig.canvas.mpl_connect('button_press_event', self)
         self.fixed_points = np.zeros((0, 3), dtype=np.float64)
         self.moving_points = np.zeros((0, 3), dtype=np.float64)
-        self.fixed_fle = fixed_fle
-        self.moving_fle = moving_fle
-        self.fixed_plot = fixed_plot
-        self.moving_plot = moving_plot
-
-        self.fids_text = self.fixed_plot.text(
-            210, 190, 'Number of fids = {0:}'.format(0))
-        self.tre_text = self.fixed_plot.text(
-            210, 210, 'Actual TRE = {0:.3f}'.format(0))
-        self.exp_tre_text = self.fixed_plot.text(
-            210, 230, 'Expected TRE = {0:.3f}'.format(math.sqrt(0)))
-        self.fre_text = self.fixed_plot.text(
-            210, 250, 'FRE = {0:.3f}'.format(0))
-        self.exp_fre_text = self.fixed_plot.text(
-            210, 270, 'Expected FRE = {0:.3f}'.format(0))
 
     def __call__(self, event):
         if event.xdata is not None:
@@ -67,65 +176,27 @@ class AddFiducialMarker:
 
             if _is_valid_fiducial(fiducial_location):
                 fixed_point = _add_guassian_fle_to_fiducial(
-                    fiducial_location, self.fixed_fle)
+                    fiducial_location, self.pbr.fixed_fle)
                 moving_point = _add_guassian_fle_to_fiducial(
-                    fiducial_location, self.moving_fle)
+                    fiducial_location, self.pbr.moving_fle)
                 self.fixed_points = np.concatenate(
                     (self.fixed_points, fixed_point), axis=0)
                 self.moving_points = np.concatenate(
                     (self.moving_points, moving_point), axis=0)
 
-                self.fixed_plot.scatter(self.fixed_points[:, 0],
-                                        self.fixed_points[:, 1],
-                                        s=36, c='g')
-                self.moving_plot.scatter(self.moving_points[:, 0],
-                                         self.moving_points[:, 1],
-                                         s=36, c='g')
+                self.plotter.plot_fiducials(self.fixed_points,
+                                            self.moving_points)
 
-                self.fids_text.remove()
-                self.fids_text = self.fixed_plot.text(
-                    210, 190,
-                    'Number of fids = {0:}'.format(self.fixed_points.shape[0]))
-                if self.fixed_points.shape[0] > 2:
-                    rotation, translation, fre = orthogonal_procrustes(
-                        self.fixed_points, self.moving_points)
-                    mean_fle = expected_absolute_value(self.fixed_fle)
-                    mean_fle_squared = mean_fle * mean_fle
-                    expected_tre = compute_tre_from_fle_2d(
-                        self.moving_points[:, 0:2],
-                        mean_fle_squared,
-                        self.target[:, 0:2])
-                    expected_fre = math.sqrt(
-                        compute_fre_2d(self.moving_points[:, 0:2],
-                                       mean_fle_squared))
 
-                    transformed_target = np.matmul(rotation,
-                                                   self.target.transpose()) + \
-                                                                   translation
-                    transformed_target_2d = [transformed_target[0][0],
-                                             transformed_target[1][0]]
-                    self.fixed_plot.scatter(transformed_target_2d[0],
-                                            transformed_target_2d[1],
-                                            s=64, c='r')
-                    actual_tre = np.linalg.norm(
-                        transformed_target_2d - self.target[:, 0:2])
 
-                    self.tre_text.remove()
-                    self.exp_tre_text.remove()
-                    self.fre_text.remove()
-                    self.exp_fre_text.remove()
+                [success, fre, _mean_fle, expected_tre, expected_fre,
+                 transformed_target_2d, actual_tre] = self.pbr.register(
+                     self.fixed_points, self.moving_points)
 
-                    self.tre_text = self.fixed_plot.text(
-                        210, 210, 'Actual TRE = {0:.3f}'.format(actual_tre))
-                    self.exp_tre_text = self.fixed_plot.text(
-                        210, 230,
-                        'Expected TRE = {0:.3f}'.format(
-                            math.sqrt(expected_tre)))
-                    self.fre_text = self.fixed_plot.text(
-                        210, 250, 'FRE = {0:.3f}'.format(fre))
-                    self.exp_fre_text = self.fixed_plot.text(
-                        210, 270, 'Expected FRE = {0:.3f}'.format(expected_fre))
-
+                if success:
+                    self.plotter.plot_results(
+                        actual_tre, expected_tre,
+                        fre, expected_fre, transformed_target_2d)
                 plt.show()
 
 
