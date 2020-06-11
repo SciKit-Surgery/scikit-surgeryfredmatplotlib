@@ -7,8 +7,7 @@ Fiducial Registration Educational Demonstration
    :target: https://github.com/UCL/scikit-surgeryfred
    :alt: Logo
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/.github/workflows/ci.yml/badge.svg
-
+.. image:: https://github.com/UCL/scikit-surgeryfred/workflows/.github/workflows/ci.yml/badge.svg
    :target: https://github.com/UCL/scikit-surgeryfred/actions
    :alt: GitHub Actions CI status
 
