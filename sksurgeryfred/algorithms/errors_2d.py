@@ -88,6 +88,8 @@ def expected_absolute_value(std_devs):
 
     #have we got the maths quite right here. fle is 1D,
     #mean_fle_squared if 2D? Check with a unit test
+    if np.any(np.array(std_devs) < 0.0):
+        raise ValueError("Cannot have negative standard deviation")
 
-    std_dev_1d = np.linalg.norm(std_devs[0])
+    std_dev_1d = np.linalg.norm(std_devs)
     return math.sqrt(2.0 / math.pi) * std_dev_1d

@@ -51,8 +51,12 @@ setup(
     ),
 
     install_requires=[
-        'six>=1.10',
-        'numpy>=1.11',
+            numpy
+            matplotlib
+            scikit-image
+            ipykernel
+            nbsphinx
+            scikit-surgerycore>0.6
     ],
 
     entry_points={
