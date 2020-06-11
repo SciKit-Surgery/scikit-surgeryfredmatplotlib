@@ -11,7 +11,7 @@ with open('README.rst') as f:
     long_description = f.read()
 
 setup(
-    name='Fiducial Registration Educational Demonstration',
+    name='scikit-surgeryfred',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description='FRED provides an interactive demonstration of fiducial based registration for teaching purposes',
