@@ -7,12 +7,13 @@ Fiducial Registration Educational Demonstration
    :target: https://github.com/UCL/scikit-surgeryfred
    :alt: Logo
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/badges/master/build.svg
-   :target: https://github.com/UCL/scikit-surgeryfred/pipelines
-   :alt: GitLab-CI test status
+.. image:: https://github.com/UCL/scikit-surgeryfred/.github/workflows/ci.yml/badge.svg
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/badges/master/coverage.svg
-    :target: https://github.com/UCL/scikit-surgeryfred/commits/master
+   :target: https://github.com/UCL/scikit-surgeryfred/actions
+   :alt: GitHub Actions CI status
+
+.. image:: https://coveralls.io/repos/github/UCL/scikit-surgeryfred/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/UCL/scikit-surgeryfred?branch=master
     :alt: Test coverage
 
 .. image:: https://readthedocs.org/projects/scikit-surgeryfred/badge/?version=latest
