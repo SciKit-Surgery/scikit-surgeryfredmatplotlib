@@ -19,6 +19,9 @@ Fiducial Registration Educational Demonstration
     :target: http://scikit-surgeryfred.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. image:: https://zenodo.org/badge/269602581.svg
+    :target: https://zenodo.org/badge/latestdoi/269602581
+    :alt: DOI - Zenodo
 
 
 Author: Stephen Thompson
