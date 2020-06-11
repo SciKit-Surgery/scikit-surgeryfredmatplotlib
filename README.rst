@@ -31,7 +31,7 @@ Fiducial Registration Educational Demonstration is intended to be used as part o
 
 ::
 
-    python sksurgery-fred.py
+    python sksurgeryfred.py
 
 Please explore the project structure, and implement your own functionality.
 
@@ -71,7 +71,7 @@ This code conforms to the PEP8 standard. Pylint can be used to analyse the code:
 ::
 
     pip install pylint
-    pylint --rcfile=tests/pylintrc sksurgery-fred
+    pylint --rcfile=tests/pylintrc sksurgeryfred
 
 
 Installing
