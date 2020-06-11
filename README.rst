@@ -1,5 +1,5 @@
 Fiducial Registration Educational Demonstration
-===============================
+===============================================
 
 .. image:: https://github.com/UCL/scikit-surgeryfred/raw/master/project-icon.png
    :height: 128px
