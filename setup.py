@@ -11,15 +11,15 @@ with open('README.rst') as f:
     long_description = f.read()
 
 setup(
-    name='Fiducial Registration Educational Demonstration',
+    name='scikit-surgeryfred',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     description='FRED provides an interactive demonstration of fiducial based registration for teaching purposes',
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    url='https://github.com/UCL/FiducialRegistrationEducationalDemonstration',
+    url='https://github.com/UCL/scikit-surgeryfred',
     author='Stephen Thompson',
-    author_email='YOUR-EMAIL@ucl.ac.uk',
+    author_email='s.thompson@ucl.ac.uk',
     license='BSD-3 license',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -51,13 +51,17 @@ setup(
     ),
 
     install_requires=[
-        'six>=1.10',
-        'numpy>=1.11',
+            'numpy',
+            'matplotlib',
+            'scikit-image',
+            'ipykernel',
+            'nbsphinx',
+            'scikit-surgerycore>0.6',
     ],
 
     entry_points={
         'console_scripts': [
-            'sksurgery-fred=sksurgery-fred.__main__:main',
+            'sksurgeryfred=sksurgeryfred.__main__:main',
         ],
     },
 )

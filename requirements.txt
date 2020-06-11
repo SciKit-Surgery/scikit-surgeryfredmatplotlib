@@ -3,5 +3,8 @@
 # confused with the software requirements, which are listed in
 # doc/requirements.rst
 numpy
+matplotlib
+scikit-image
 ipykernel
 nbsphinx
+scikit-surgerycore>0.6
