@@ -15,6 +15,7 @@ from sksurgeryfred.algorithms.errors_2d import compute_tre_from_fle_2d, \
                                                compute_fre_2d, \
                                                expected_absolute_value
 
+from sksurgeryfred.logging.fred_logger import Logger
 
 class PointBasedRegistration:
     """
@@ -134,7 +135,7 @@ class PlotRegistrations():
         self.exp_tre_text = self.fixed_plot.text(
             210, 230,
             'Expected TRE = {0:.3f}'.format(
-                math.sqrt(expected_tre)))
+                expected_tre))
         self.fre_text = self.fixed_plot.text(
             210, 250, 'FRE = {0:.3f}'.format(fre))
         self.exp_fre_text = self.fixed_plot.text(
@@ -152,7 +153,7 @@ class AddFiducialMarker:
     """
 
     def __init__(self, fig, fixed_plot, moving_plot, target,
-                 fixed_fle, moving_fle):
+                 fixed_fle, moving_fle, logger):
         """
         :params fig: the matplot lib figure to get mouse events from
         :params fixed_plot: the fixed image subplot
@@ -167,6 +168,7 @@ class AddFiducialMarker:
         self.cid = fig.canvas.mpl_connect('button_press_event', self)
         self.fixed_points = np.zeros((0, 3), dtype=np.float64)
         self.moving_points = np.zeros((0, 3), dtype=np.float64)
+        self.logger = logger
 
     def __call__(self, event):
         if event.xdata is not None:
@@ -189,14 +191,17 @@ class AddFiducialMarker:
 
 
 
-                [success, fre, _mean_fle, expected_tre, expected_fre,
+                [success, fre, _mean_fle, expected_tre_sq, expected_fre,
                  transformed_target_2d, actual_tre] = self.pbr.register(
                      self.fixed_points, self.moving_points)
 
                 if success:
+                    expected_tre = math.sqrt(expected_tre_sq)
                     self.plotter.plot_results(
                         actual_tre, expected_tre,
                         fre, expected_fre, transformed_target_2d)
+                    self.logger.log(message="success,{0:.4f},{1:.4f}".format(
+                        actual_tre, expected_tre))
                 plt.show()
 
 
@@ -243,7 +248,14 @@ def plot_errors_interactive(image_file_name, target_point):
     fixed_fle[0, 0] = 2.0
     fixed_fle[0, 1] = 2.0
 
+    log_config = {"logger" : {
+        "log file name" : "fred_results.log",
+        "overwrite existing" : False
+        }}
+
+    logger = Logger(log_config)
+
     _ = AddFiducialMarker(fig, subplot[1], subplot[0],
-                          target_point, fixed_fle, moving_fle)
+                          target_point, fixed_fle, moving_fle, logger)
 
     plt.show()
