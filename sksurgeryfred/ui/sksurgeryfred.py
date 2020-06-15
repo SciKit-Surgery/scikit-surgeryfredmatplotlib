@@ -2,7 +2,7 @@
 
 """User interfaces for sksurgeryFRED"""
 
-from sksurgeryfred.algorithms.camera_calibration import \
+from sksurgeryfred.algorithms.fred import \
                 plot_errors_interactive, make_target_point
 
 def run_demo(image):
