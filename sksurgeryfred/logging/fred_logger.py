@@ -1,6 +1,7 @@
 """ Class to handle sksurgeryfred logging """
 
 from logging import getLogger, FileHandler, Formatter, INFO
+import csv
 
 class Logger():
     """Implements logging functionality for sksurgeryfred.
@@ -25,15 +26,15 @@ class Logger():
         if log_config is not None:
             self._logger = getLogger("sksurgeryfred")
 
-            log_file_name = log_config.get("log file name",
-                                           "sksurgeryfred.log")
+            self.log_file_name = log_config.get("log file name",
+                                                "sksurgeryfred.log")
             overwrite = log_config.get("overwrite existing", False)
 
             mode = 'a'
             if overwrite:
                 mode = 'w'
 
-            file_handler = FileHandler(log_file_name, mode)
+            file_handler = FileHandler(self.log_file_name, mode)
 
             formatter = Formatter('%(asctime)s - %(name)s -' +
                                   ' %(levelname)s - %(message)s')
@@ -50,6 +51,45 @@ class Logger():
             return
 
         self._logger.info(message)
+    
+    def log_result(self, actual_tre, fre, expected_tre, expected_fre, mean_fle,
+                   no_fids):
+        """
+        Writes the registration result to log file
+        """
+        msg=("success, {0:.4f}, {1:.4f}, {2:.4f}, {3:.4f}, {4:.4f}," + 
+            "{5:2d}").format(
+            actual_tre, fre, expected_tre, expected_fre, mean_fle, no_fids)
+        self._logger.info(msg)
+
+
+    def read_log(self):
+            
+        actual_tres = []
+        actual_fres = []
+        expected_tres = []
+        expected_fres = []
+        mean_fles = []
+        no_fids = []
+
+        samples = 0
+        with open(self.log_file_name, mode='r') as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            for row in csv_reader:
+                try:
+                    actual_tres.append(float(row[2]))
+                    actual_fres.append(float(row[3]))
+                    expected_tres.append(float(row[4]))
+                    expected_fres.append(float(row[5]))
+                    mean_fles.append(float(row[6]))
+                    no_fids.append(int(row[7]))
+                    samples += 1
+                except IndexError:
+                    raise IOError(("Failed to read log file, " +
+                                   "{0:}".format(self.log_file_name) +
+                                   " near line: {0:}".format(samples)))
+        return [actual_tres, actual_fres, expected_tres, expected_fres, 
+                mean_fles, no_fids]
 
     def __del__(self):
         """Releases the log file"""

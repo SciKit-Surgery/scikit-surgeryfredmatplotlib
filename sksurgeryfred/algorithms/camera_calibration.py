@@ -50,8 +50,10 @@ class PointBasedRegistration:
         expected_fre = 0.0
         transformed_target_2d = [-1.0, -1.0]
         actual_tre = 0.0
+        
+        no_fids = fixed_points.shape[0]
 
-        if fixed_points.shape[0] > 2:
+        if no_fids > 2:
             rotation, translation, fre = orthogonal_procrustes(
                 fixed_points, moving_points)
             mean_fle = expected_absolute_value(self.fixed_fle)
@@ -74,7 +76,7 @@ class PointBasedRegistration:
             success = True
 
         return [success, fre, mean_fle, expected_tre, expected_fre,
-                transformed_target_2d, actual_tre]
+                transformed_target_2d, actual_tre, no_fids]
 
 
 class PlotRegistrations():
@@ -102,7 +104,7 @@ class PlotRegistrations():
         self.exp_fre_text = self.fixed_plot.text(
             210, 270, 'Expected FRE = {0:.3f}'.format(0))
 
-    def plot_fiducials(self, fixed_points, moving_points):
+    def plot_fiducials(self, fixed_points, moving_points, no_fids):
         """
         Updates plot with fiducial data
         """
@@ -117,11 +119,11 @@ class PlotRegistrations():
         self.fids_text.remove()
         self.fids_text = self.fixed_plot.text(
             210, 190,
-            'Number of fids = {0:}'.format(fixed_points.shape[0]))
+            'Number of fids = {0:}'.format(no_fids))
 
 
-    def plot_results(self, actual_tre, expected_tre,
-                     fre, expected_fre, transformed_target_2d):
+    def plot_registration_result(self, actual_tre, expected_tre,
+                                 fre, expected_fre, transformed_target_2d):
         """
         Plots the results of a registration
         """
@@ -186,22 +188,22 @@ class AddFiducialMarker:
                 self.moving_points = np.concatenate(
                     (self.moving_points, moving_point), axis=0)
 
-                self.plotter.plot_fiducials(self.fixed_points,
-                                            self.moving_points)
-
-
-
-                [success, fre, _mean_fle, expected_tre_sq, expected_fre,
-                 transformed_target_2d, actual_tre] = self.pbr.register(
+                [success, fre, mean_fle, expected_tre_sq, 
+                 expected_fre, transformed_target_2d, 
+                 actual_tre, no_fids] = self.pbr.register(
                      self.fixed_points, self.moving_points)
+
+                self.plotter.plot_fiducials(self.fixed_points,
+                                            self.moving_points, no_fids)
 
                 if success:
                     expected_tre = math.sqrt(expected_tre_sq)
-                    self.plotter.plot_results(
+                    self.plotter.plot_registration_result(
                         actual_tre, expected_tre,
                         fre, expected_fre, transformed_target_2d)
-                    self.logger.log(message="success,{0:.4f},{1:.4f}".format(
-                        actual_tre, expected_tre))
+                    self.logger.log_result(
+                        actual_tre, fre, expected_tre, expected_fre, mean_fle,
+                        no_fids)
                 plt.show()
 
 
@@ -259,3 +261,32 @@ def plot_errors_interactive(image_file_name, target_point):
                           target_point, fixed_fle, moving_fle, logger)
 
     plt.show()
+
+
+
+def plot_results():
+    """
+    Plots the results  of multiple runs, from the log file.
+    """
+
+    log_config = {"logger" : {
+        "log file name" : "fred_results.log",
+        "overwrite existing" : False
+        }}
+
+    logger = Logger(log_config)
+
+    [actual_tres, actual_fres, expected_tres, expected_fres,
+        mean_fles, no_fids] =  logger.read_log()
+
+    fig, subplot = plt.subplots(1, 5, figsize=(18, 8))
+
+    subplot[0].scatter(actual_fres, actual_tres)
+    subplot[1].scatter(expected_tres, actual_tres)
+    subplot[2].scatter(expected_fres, actual_tres)
+    subplot[3].scatter(mean_fles, actual_tres)
+    subplot[4].scatter(no_fids, actual_tres)
+
+    plt.show()
+
+
