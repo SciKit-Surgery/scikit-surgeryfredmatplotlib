@@ -51,20 +51,23 @@ class Logger():
             return
 
         self._logger.info(message)
-    
+
     def log_result(self, actual_tre, fre, expected_tre, expected_fre, mean_fle,
                    no_fids):
         """
         Writes the registration result to log file
         """
-        msg=("success, {0:.4f}, {1:.4f}, {2:.4f}, {3:.4f}, {4:.4f}," + 
-            "{5:2d}").format(
-            actual_tre, fre, expected_tre, expected_fre, mean_fle, no_fids)
+        msg = ("success, {0:.4f}, {1:.4f}, {2:.4f}, {3:.4f}, {4:.4f}," +
+               "{5:2d}").format(
+                   actual_tre, fre, expected_tre, expected_fre, mean_fle,
+                   no_fids)
         self._logger.info(msg)
 
 
     def read_log(self):
-            
+        """
+        reads a log file and returns lists of values
+        """
         actual_tres = []
         actual_fres = []
         expected_tres = []
@@ -88,7 +91,7 @@ class Logger():
                     raise IOError(("Failed to read log file, " +
                                    "{0:}".format(self.log_file_name) +
                                    " near line: {0:}".format(samples)))
-        return [actual_tres, actual_fres, expected_tres, expected_fres, 
+        return [actual_tres, actual_fres, expected_tres, expected_fres,
                 mean_fles, no_fids]
 
     def __del__(self):

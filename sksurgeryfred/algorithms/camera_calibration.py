@@ -50,7 +50,7 @@ class PointBasedRegistration:
         expected_fre = 0.0
         transformed_target_2d = [-1.0, -1.0]
         actual_tre = 0.0
-        
+
         no_fids = fixed_points.shape[0]
 
         if no_fids > 2:
@@ -188,8 +188,8 @@ class AddFiducialMarker:
                 self.moving_points = np.concatenate(
                     (self.moving_points, moving_point), axis=0)
 
-                [success, fre, mean_fle, expected_tre_sq, 
-                 expected_fre, transformed_target_2d, 
+                [success, fre, mean_fle, expected_tre_sq,
+                 expected_fre, transformed_target_2d,
                  actual_tre, no_fids] = self.pbr.register(
                      self.fixed_points, self.moving_points)
 
@@ -277,9 +277,9 @@ def plot_results():
     logger = Logger(log_config)
 
     [actual_tres, actual_fres, expected_tres, expected_fres,
-        mean_fles, no_fids] =  logger.read_log()
+     mean_fles, no_fids] = logger.read_log()
 
-    fig, subplot = plt.subplots(1, 5, figsize=(18, 8))
+    _, subplot = plt.subplots(1, 5, figsize=(18, 8))
 
     subplot[0].scatter(actual_fres, actual_tres)
     subplot[1].scatter(expected_tres, actual_tres)
@@ -288,5 +288,3 @@ def plot_results():
     subplot[4].scatter(no_fids, actual_tres)
 
     plt.show()
-
-

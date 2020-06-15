@@ -14,8 +14,8 @@ def main(args=None):
     application"""
 
     parser = argparse.ArgumentParser(
-        description=('Plot Results for Fiducial Registration' + 
-                    'Educational Demonstration'))
+        description=('Plot Results for Fiducial Registration' +
+                     'Educational Demonstration'))
 
     version_string = __version__
     friendly_version_string = version_string if version_string else 'unknown'
