@@ -5,7 +5,6 @@ calibration and tracking
 import math
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import skimage.io
 
 from sksurgerycore.algorithms.procrustes import orthogonal_procrustes
@@ -147,6 +146,27 @@ class PlotRegistrations():
                                 transformed_target_2d[1],
                                 s=64, c='r')
 
+class KeyBoardEvent:
+    """
+    A class to handle mouse press events, adding a fiducial
+    marker.
+    """
+
+    def __init__(self, fig):
+        """
+        :params fig: the matplot lib figure to get mouse events from
+        :params fixed_plot: the fixed image subplot
+        :params moving_plot: the moving image subplot
+        :params target: 1x3 target point
+        :params fixed_fle: the standard deviations of the fixed image fle
+        :params moving_fle: the standard deviations of the moving image fle
+        """
+
+        self.cid = fig.canvas.mpl_connect('key_press_event', self)
+
+    def __call__(self, event):
+        print("Got event, ", event.key)
+
 
 class AddFiducialMarker:
     """
@@ -224,44 +244,55 @@ def make_target_point():
     """
     return np.array([[200.0, 180, 0.0]])
 
-def plot_errors_interactive(image_file_name, target_point):
+class InteractiveRegistration:
     """
-    Creates a visualisation of the projected and
-    detected screen points, which you can click on
-    to measure distances
+    an interactive window for doing live registration
     """
-    img = mpimg.imread(image_file_name)
-    img = skimage.io.imread(image_file_name)
-    outline, _initial_guess = find_outer_contour(img)
 
+    def __init__(self, image_file_name):
+        """
+        Creates a visualisation of the projected and
+        detected screen points, which you can click on
+        to measure distances
+        """
+        target_point = make_target_point()
+        img = skimage.io.imread(image_file_name)
+        outline, _initial_guess = find_outer_contour(img)
 
-    fig, subplot = plt.subplots(1, 2, figsize=(18, 8))
-    subplot[0].imshow(img)
-    subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
-    subplot[1].set_ylim([0, img.shape[0]])
-    subplot[1].set_xlim([0, img.shape[1]])
-    subplot[1].axis([0, img.shape[1], img.shape[0], 0])
-    subplot[1].axis('scaled')
+        self.intialise_registration()
 
-    subplot[0].scatter(target_point[0, 0], target_point[0, 1], s=64, c='r')
+        fig, subplot = plt.subplots(1, 2, figsize=(18, 8))
+        subplot[0].imshow(img)
+        subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
+        subplot[1].set_ylim([0, img.shape[0]])
+        subplot[1].set_xlim([0, img.shape[1]])
+        subplot[1].axis([0, img.shape[1], img.shape[0], 0])
+        subplot[1].axis('scaled')
 
-    moving_fle = np.zeros((1, 3), dtype=np.float64)
-    fixed_fle = np.zeros((1, 3), dtype=np.float64)
-    fixed_fle[0, 0] = 2.0
-    fixed_fle[0, 1] = 2.0
+        subplot[0].scatter(target_point[0, 0], target_point[0, 1], s=64, c='r')
 
-    log_config = {"logger" : {
-        "log file name" : "fred_results.log",
-        "overwrite existing" : False
-        }}
+        moving_fle = np.zeros((1, 3), dtype=np.float64)
+        fixed_fle = np.zeros((1, 3), dtype=np.float64)
+        fixed_fle[0, 0] = 2.0
+        fixed_fle[0, 1] = 2.0
 
-    logger = Logger(log_config)
+        log_config = {"logger" : {
+            "log file name" : "fred_results.log",
+            "overwrite existing" : False
+            }}
 
-    _ = AddFiducialMarker(fig, subplot[1], subplot[0],
-                          target_point, fixed_fle, moving_fle, logger)
+        logger = Logger(log_config)
 
-    plt.show()
+        _ = AddFiducialMarker(fig, subplot[1], subplot[0],
+                              target_point, fixed_fle, moving_fle, logger)
 
+        _ = KeyBoardEvent(fig)
+        plt.show()
+
+    def intialise_registration(self):
+        """
+        sets up the registration
+        """
 
 
 def plot_results():
