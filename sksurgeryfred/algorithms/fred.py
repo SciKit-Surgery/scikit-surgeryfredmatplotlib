@@ -38,7 +38,7 @@ class PointBasedRegistration:
         self.fixed_fle = None
         self.moving_fle = None
         self.reinit(target, fixed_fle, moving_fle)
-    
+
     def reinit(self, target, fixed_fle, moving_fle):
         """
         reinitiatilses the target and errors
@@ -95,13 +95,14 @@ class PlotRegStatistics():
         """
         The plot to write on
         """
+        self.plot = plot
         self.fids_text = None
         self.fle_text = None
         self.tre_text = None
         self.exp_tre_text = None
         self.fre_text = None
         self.exp_fre_text = None
-    
+
     def update_stats_plot(self, tre, exp_tre, fre, exp_fre):
         """
         Updates the statistics display
@@ -115,13 +116,13 @@ class PlotRegStatistics():
         if self.exp_fre_text is not None:
             self.exp_fre_text.remove()
 
-        self.tre_text = self.fixed_plot.text(
+        self.tre_text = self.plot.text(
             210, 230, 'Actual TRE = {0:.3f}'.format(tre))
-        self.exp_tre_text = self.fixed_plot.text(
+        self.exp_tre_text = self.plot.text(
             210, 250, 'Expected TRE = {0:.3f}'.format(exp_tre))
-        self.fre_text = self.fixed_plot.text(
+        self.fre_text = self.plot.text(
             210, 270, 'FRE = {0:.3f}'.format(fre))
-        self.exp_fre_text = self.fixed_plot.text(
+        self.exp_fre_text = self.plot.text(
             210, 290, 'Expected FRE = {0:.3f}'.format(exp_fre))
 
     def update_fids_stats(self, no_fids, mean_fle):
@@ -133,11 +134,11 @@ class PlotRegStatistics():
         if self.fle_text is not None:
             self.fle_text.remove()
 
-        self.fids_text = self.fixed_plot.text(
+        self.fids_text = self.plot.text(
             210, 190,
             'Number of fids = {0:}'.format(no_fids))
 
-        self.fle_text = self.fixed_plot.text(
+        self.fle_text = self.plot.text(
             210, 210, 'Expected FLE = {0:.3f}'.format(mean_fle))
 
 
@@ -182,10 +183,10 @@ class PlotRegistrations():
         if self.trans_target_plot is not None:
             self.trans_target_plot.remove()
             self.trans_target_plot = None
-        
+
 
         self.stats_plot.update_stats_plot(0, 0, 0, 0)
-     
+
 
     def plot_fiducials(self, fixed_points, moving_points, no_fids, mean_fle):
         """
@@ -211,7 +212,7 @@ class PlotRegistrations():
         """
         Plots the results of a registration
         """
-        
+
         self.stats_plot.update_stats_plot(actual_tre, expected_tre,
                                           fre, expected_fre)
 
@@ -379,7 +380,7 @@ class InteractiveRegistration:
         fixed_fle[0, 1] = 2.0
 
         if self.pbr is None:
-            self.pbr = PointBasedRegistration(target_point, fixed_fle, 
+            self.pbr = PointBasedRegistration(target_point, fixed_fle,
                                               moving_fle)
         else:
             self.pbr.reinit(target_point, fixed_fle, moving_fle)
