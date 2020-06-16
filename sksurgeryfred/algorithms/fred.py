@@ -146,27 +146,6 @@ class PlotRegistrations():
                                 transformed_target_2d[1],
                                 s=64, c='r')
 
-class KeyBoardEvent:
-    """
-    A class to handle mouse press events, adding a fiducial
-    marker.
-    """
-
-    def __init__(self, fig):
-        """
-        :params fig: the matplot lib figure to get mouse events from
-        :params fixed_plot: the fixed image subplot
-        :params moving_plot: the moving image subplot
-        :params target: 1x3 target point
-        :params fixed_fle: the standard deviations of the fixed image fle
-        :params moving_fle: the standard deviations of the moving image fle
-        """
-
-        self.cid = fig.canvas.mpl_connect('key_press_event', self)
-
-    def __call__(self, event):
-        print("Got event, ", event.key)
-
 
 class AddFiducialMarker:
     """
@@ -174,7 +153,7 @@ class AddFiducialMarker:
     marker.
     """
 
-    def __init__(self, fig, fixed_plot, moving_plot, target,
+    def __init__(self, fig, plotter, target,
                  fixed_fle, moving_fle, logger):
         """
         :params fig: the matplot lib figure to get mouse events from
@@ -186,10 +165,11 @@ class AddFiducialMarker:
         """
 
         self.pbr = PointBasedRegistration(target, fixed_fle, moving_fle)
-        self.plotter = PlotRegistrations(fixed_plot, moving_plot)
+        self.plotter = plotter
         self.cid = fig.canvas.mpl_connect('button_press_event', self)
-        self.fixed_points = np.zeros((0, 3), dtype=np.float64)
-        self.moving_points = np.zeros((0, 3), dtype=np.float64)
+        self.fixed_points = None 
+        self.moving_points = None
+        self.reset_fiducuals()
         self.logger = logger
 
     def __call__(self, event):
@@ -226,6 +206,10 @@ class AddFiducialMarker:
                         no_fids)
                 plt.show()
 
+    def reset_fiducuals(self):
+        self.fixed_points = np.zeros((0, 3), dtype=np.float64)
+        self.moving_points = np.zeros((0, 3), dtype=np.float64)
+
 
 def _is_valid_fiducial(_unused_fiducial_location):
     """
@@ -238,11 +222,21 @@ def _add_guassian_fle_to_fiducial(fiducial, fle_standard_deviation):
 
     return np.random.normal(fiducial, fle_standard_deviation)
 
-def make_target_point():
+def make_target_point(outline, edge_buffer=0.9):
     """
-    returns a target point
+    returns a target point, that should lie 
+    within the outline.
     """
-    return np.array([[200.0, 180, 0.0]])
+    #let's assume the anatomy is a circle with
+    #centre, and radius
+    centre = np.mean(outline,0)
+    max_radius = np.min((np.max(outline,0) - np.min(outline,0))/2)*edge_buffer
+
+    radius = np.random.uniform(low=0.0, high=max_radius)
+    angle = np.random.uniform(low=0.0, high=math.pi*2.0)
+    x_ord = radius * math.cos(angle) + centre[0]
+    y_ord = radius * math.sin(angle) + centre[1]
+    return np.array([[x_ord, y_ord, 0.0]])
 
 class InteractiveRegistration:
     """
@@ -256,38 +250,47 @@ class InteractiveRegistration:
         to measure distances
         """
 
-        fig, subplot = plt.subplots(1, 2, figsize=(18, 8))
+        self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 8))
+        self.plotter = PlotRegistrations(self.subplot[1], self.subplot[0])
 
         log_config = {"logger" : {
             "log file name" : "fred_results.log",
             "overwrite existing" : False
             }}
 
-        logger = Logger(log_config)
+        self.logger = Logger(log_config)
         self.mouse_int = None
+        self.image_file_name = image_file_name
 
-        self.intialise_registration(image_file_name, logger, fig, subplot)
+        self.intialise_registration()
 
-        _ = KeyBoardEvent(fig)
+        self.cid = self.fig.canvas.mpl_connect('key_press_event', 
+                                               self.keypress_event)
 
         plt.show()
 
-    def intialise_registration(self, image_file_name, logger, fig, subplot):
+    def keypress_event(self, event):
+        if event.key == 'r':
+            self.intialise_registration()
+        print("Got event, ", event.key)
+
+    def intialise_registration(self):
         """
         sets up the registration
         """
-        target_point = make_target_point()
-        img = skimage.io.imread(image_file_name)
+        img = skimage.io.imread(self.image_file_name)
         outline, _initial_guess = find_outer_contour(img)
+        target_point = make_target_point(outline)
 
-        subplot[0].imshow(img)
-        subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
-        subplot[1].set_ylim([0, img.shape[0]])
-        subplot[1].set_xlim([0, img.shape[1]])
-        subplot[1].axis([0, img.shape[1], img.shape[0], 0])
-        subplot[1].axis('scaled')
+        self.subplot[0].imshow(img)
+        self.subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
+        self.subplot[1].set_ylim([0, img.shape[0]])
+        self.subplot[1].set_xlim([0, img.shape[1]])
+        self.subplot[1].axis([0, img.shape[1], img.shape[0], 0])
+        self.subplot[1].axis('scaled')
 
-        subplot[0].scatter(target_point[0, 0], target_point[0, 1], s=64, c='r')
+        self.subplot[0].scatter(target_point[0, 0], 
+                                target_point[0, 1], s=64, c='r')
 
         moving_fle = np.zeros((1, 3), dtype=np.float64)
         fixed_fle = np.zeros((1, 3), dtype=np.float64)
@@ -296,9 +299,9 @@ class InteractiveRegistration:
 
         del self.mouse_int
 
-        self.mouse_int = AddFiducialMarker(fig, subplot[1], subplot[0],
+        self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
                                            target_point, fixed_fle, moving_fle,
-                                           logger)
+                                           self.logger)
 
 
 
