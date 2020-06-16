@@ -87,6 +87,60 @@ class PointBasedRegistration:
                 transformed_target_2d, actual_tre, no_fids]
 
 
+class PlotRegStatistics():
+    """
+    writes the registration statistics
+    """
+    def __init__(self, plot):
+        """
+        The plot to write on
+        """
+        self.fids_text = None
+        self.fle_text = None
+        self.tre_text = None
+        self.exp_tre_text = None
+        self.fre_text = None
+        self.exp_fre_text = None
+    
+    def update_stats_plot(self, tre, exp_tre, fre, exp_fre):
+        """
+        Updates the statistics display
+        """
+        if self.tre_text is not None:
+            self.tre_text.remove()
+        if self.exp_tre_text is not None:
+            self.exp_tre_text.remove()
+        if self.fre_text is not None:
+            self.fre_text.remove()
+        if self.exp_fre_text is not None:
+            self.exp_fre_text.remove()
+
+        self.tre_text = self.fixed_plot.text(
+            210, 230, 'Actual TRE = {0:.3f}'.format(tre))
+        self.exp_tre_text = self.fixed_plot.text(
+            210, 250, 'Expected TRE = {0:.3f}'.format(exp_tre))
+        self.fre_text = self.fixed_plot.text(
+            210, 270, 'FRE = {0:.3f}'.format(fre))
+        self.exp_fre_text = self.fixed_plot.text(
+            210, 290, 'Expected FRE = {0:.3f}'.format(exp_fre))
+
+    def update_fids_stats(self, no_fids, mean_fle):
+        """
+        Updates the fids stats display
+        """
+        if self.fids_text is not None:
+            self.fids_text.remove()
+        if self.fle_text is not None:
+            self.fle_text.remove()
+
+        self.fids_text = self.fixed_plot.text(
+            210, 190,
+            'Number of fids = {0:}'.format(no_fids))
+
+        self.fle_text = self.fixed_plot.text(
+            210, 210, 'Expected FLE = {0:.3f}'.format(mean_fle))
+
+
 class PlotRegistrations():
     """
     Plots the results of registrations
@@ -101,16 +155,12 @@ class PlotRegistrations():
         self.fixed_plot = fixed_plot
         self.moving_plot = moving_plot
 
-        self.fids_text = None
-        self.fle_text = None
-        self.tre_text = None
-        self.exp_tre_text = None
-        self.fre_text = None
-        self.exp_fre_text = None
         self.target_scatter = None
         self.trans_target_plot = None
         self.fixed_fids_plot = None
         self.moving_fids_plot = None
+
+        self.stats_plot = PlotRegStatistics(fixed_plot)
 
     def initialise_new_reg(self, img, target_point, outline):
         """
@@ -123,13 +173,7 @@ class PlotRegistrations():
         self.fixed_plot.axis([0, img.shape[1], img.shape[0], 0])
         self.fixed_plot.axis('scaled')
 
-        if self.fids_text is not None:
-            self.fids_text.remove()
-            self.fle_text.remove()
-            self.tre_text.remove()
-            self.exp_tre_text.remove()
-            self.fre_text.remove()
-            self.exp_fre_text.remove()
+        if self.target_scatter is not None:
             self.target_scatter.remove()
 
         self.target_scatter = self.moving_plot.scatter(target_point[0, 0],
@@ -138,21 +182,10 @@ class PlotRegistrations():
         if self.trans_target_plot is not None:
             self.trans_target_plot.remove()
             self.trans_target_plot = None
+        
 
-        self.fids_text = self.fixed_plot.text(
-            210, 190, 'Number of fids = {0:}'.format(0))
-        self.fle_text = self.fixed_plot.text(
-            210, 210, 'Expected FLE = {0:.3f}'.format(0))
-        self.tre_text = self.fixed_plot.text(
-            210, 230, 'Actual TRE = {0:.3f}'.format(0))
-        self.exp_tre_text = self.fixed_plot.text(
-            210, 250, 'Expected TRE = {0:.3f}'.format(math.sqrt(0)))
-        self.fre_text = self.fixed_plot.text(
-            210, 270, 'FRE = {0:.3f}'.format(0))
-        self.exp_fre_text = self.fixed_plot.text(
-            210, 290, 'Expected FRE = {0:.3f}'.format(0))
-
-
+        self.stats_plot.update_stats_plot(0, 0, 0, 0)
+     
 
     def plot_fiducials(self, fixed_points, moving_points, no_fids, mean_fle):
         """
@@ -171,35 +204,16 @@ class PlotRegistrations():
                                                          moving_points[:, 1],
                                                          s=36, c='g')
 
-        self.fids_text.remove()
-        self.fids_text = self.fixed_plot.text(
-            210, 190,
-            'Number of fids = {0:}'.format(no_fids))
-
-        self.fle_text.remove()
-        self.fle_text = self.fixed_plot.text(
-            210, 210, 'Expected FLE = {0:.3f}'.format(mean_fle))
+        self.stats_plot.update_fids_stats(no_fids, mean_fle)
 
     def plot_registration_result(self, actual_tre, expected_tre,
                                  fre, expected_fre, transformed_target_2d):
         """
         Plots the results of a registration
         """
-        self.tre_text.remove()
-        self.exp_tre_text.remove()
-        self.fre_text.remove()
-        self.exp_fre_text.remove()
-
-        self.tre_text = self.fixed_plot.text(
-            210, 230, 'Actual TRE = {0:.3f}'.format(actual_tre))
-        self.exp_tre_text = self.fixed_plot.text(
-            210, 250,
-            'Expected TRE = {0:.3f}'.format(
-                expected_tre))
-        self.fre_text = self.fixed_plot.text(
-            210, 270, 'FRE = {0:.3f}'.format(fre))
-        self.exp_fre_text = self.fixed_plot.text(
-            210, 290, 'Expected FRE = {0:.3f}'.format(expected_fre))
+        
+        self.stats_plot.update_stats_plot(actual_tre, expected_tre,
+                                          fre, expected_fre)
 
         if self.trans_target_plot is not None:
             self.trans_target_plot.remove()
