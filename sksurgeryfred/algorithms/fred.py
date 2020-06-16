@@ -34,9 +34,19 @@ class PointBasedRegistration:
         if not fixed_fle[0, 2] == 0:
             raise NotImplementedError("Currently we only 2D fle ")
 
+        self.target = None
+        self.fixed_fle = None
+        self.moving_fle = None
+        self.reinit(target, fixed_fle, moving_fle)
+    
+    def reinit(self, target, fixed_fle, moving_fle):
+        """
+        reinitiatilses the target and errors
+        """
         self.target = target
         self.fixed_fle = fixed_fle
         self.moving_fle = moving_fle
+        print("set target = ", self.target, self)
 
     def register(self, fixed_points, moving_points):
         """
@@ -51,6 +61,7 @@ class PointBasedRegistration:
         actual_tre = 0.0
 
         no_fids = fixed_points.shape[0]
+        print("trying to register  target = ", self.target, self)
 
         if no_fids > 2:
             rotation, translation, fre = orthogonal_procrustes(
@@ -73,6 +84,8 @@ class PointBasedRegistration:
             actual_tre = np.linalg.norm(
                 transformed_target_2d - self.target[:, 0:2])
             success = True
+
+            print (self.target, transformed_target_2d)
 
         return [success, fre, mean_fle, expected_tre, expected_fre,
                 transformed_target_2d, actual_tre, no_fids]
@@ -230,6 +243,7 @@ class AddFiducialMarker:
                     (self.moving_points, moving_point), axis=0)
 
                 print(self.fixed_points)
+                print("Registering target: ", self.pbr.target)
                 [success, fre, mean_fle, expected_tre_sq,
                  expected_fre, transformed_target_2d,
                  actual_tre, no_fids] = self.pbr.register(
@@ -258,6 +272,7 @@ class AddFiducialMarker:
         self.plotter.plot_fiducials(self.fixed_points,
                                     self.moving_points,
                                     0)
+
 
 def _is_valid_fiducial(_unused_fiducial_location):
     """
@@ -307,6 +322,7 @@ class InteractiveRegistration:
 
         self.logger = Logger(log_config)
         self.mouse_int = None
+        self.pbr = None
         self.image_file_name = image_file_name
 
         self.intialise_registration()
@@ -337,12 +353,15 @@ class InteractiveRegistration:
         fixed_fle = np.zeros((1, 3), dtype=np.float64)
         fixed_fle[0, 0] = 2.0
         fixed_fle[0, 1] = 2.0
-
-        pbr = PointBasedRegistration(target_point, fixed_fle, moving_fle)
+        
+        if self.pbr is None:
+            self.pbr = PointBasedRegistration(target_point, fixed_fle, moving_fle)
+        else:
+            self.pbr.reinit(target_point, fixed_fle, moving_fle)
 
         if self.mouse_int is None:
             self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
-                                               pbr, self.logger)
+                                               self.pbr, self.logger)
         else:
             self.mouse_int.reset_fiducials()
 
