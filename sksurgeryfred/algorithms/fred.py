@@ -320,6 +320,7 @@ def make_target_point(outline, edge_buffer=0.9):
     centre = np.mean(outline, 0)
     max_radius = np.min((np.max(outline, 0) - np.min(outline, 0))/2)*edge_buffer
     radius = np.random.uniform(low=0.0, high=max_radius)
+    radius = np.random.uniform(low=0.0, high=max_radius)
     angle = np.random.uniform(low=0.0, high=math.pi*2.0)
     x_ord = radius * math.cos(angle) + centre[0]
     y_ord = radius * math.sin(angle) + centre[1]
@@ -376,8 +377,8 @@ class InteractiveRegistration:
 
         moving_fle = np.zeros((1, 3), dtype=np.float64)
         fixed_fle = np.zeros((1, 3), dtype=np.float64)
-        fixed_fle[0, 0] = 2.0
-        fixed_fle[0, 1] = 2.0
+        fixed_fle[0, 0] = np.random.uniform(low=0.5, high=5.0)
+        fixed_fle[0, 1] = fixed_fle[0, 0]
 
         if self.pbr is None:
             self.pbr = PointBasedRegistration(target_point, fixed_fle,
