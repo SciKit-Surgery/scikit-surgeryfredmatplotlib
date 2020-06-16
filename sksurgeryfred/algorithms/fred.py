@@ -92,6 +92,38 @@ class PlotRegistrations():
         self.fixed_plot = fixed_plot
         self.moving_plot = moving_plot
 
+        self.fids_text = None
+        self.tre_text = None
+        self.exp_tre_text = None
+        self.fre_text = None
+        self.exp_fre_text = None
+        self.target_scatter = None
+        self.fixed_fids_plot = None
+        self.moving_fids_plot = None
+
+    def initialise_new_reg(self, img, target_point, outline):
+        """
+        resets the registration
+        """
+        self.moving_plot.imshow(img)
+        self.fixed_plot.plot(outline[:, 1], outline[:, 0], '-b', lw=3)
+        self.fixed_plot.set_ylim([0, img.shape[0]])
+        self.fixed_plot.set_xlim([0, img.shape[1]])
+        self.fixed_plot.axis([0, img.shape[1], img.shape[0], 0])
+        self.fixed_plot.axis('scaled')
+
+        if self.fids_text is not None:
+            self.fids_text.remove()
+            self.tre_text.remove()
+            self.exp_tre_text.remove()
+            self.fre_text.remove()
+            self.exp_fre_text.remove()
+            self.target_scatter.remove()
+
+        self.target_scatter = self.moving_plot.scatter(target_point[0, 0],
+                                                       target_point[0, 1],
+                                                       s=64, c='r')
+
         self.fids_text = self.fixed_plot.text(
             210, 190, 'Number of fids = {0:}'.format(0))
         self.tre_text = self.fixed_plot.text(
@@ -103,17 +135,24 @@ class PlotRegistrations():
         self.exp_fre_text = self.fixed_plot.text(
             210, 270, 'Expected FRE = {0:.3f}'.format(0))
 
+
+
     def plot_fiducials(self, fixed_points, moving_points, no_fids):
         """
         Updates plot with fiducial data
         """
 
-        self.fixed_plot.scatter(fixed_points[:, 0],
-                                fixed_points[:, 1],
-                                s=36, c='g')
-        self.moving_plot.scatter(moving_points[:, 0],
-                                 moving_points[:, 1],
-                                 s=36, c='g')
+        if self.fixed_fids_plot is not None:
+            self.fixed_fids_plot.remove()
+        if self.moving_fids_plot is not None:
+            self.moving_fids_plot.remove()
+
+        self.fixed_fids_plot = self.fixed_plot.scatter(fixed_points[:, 0],
+                                                       fixed_points[:, 1],
+                                                       s=36, c='g')
+        self.moving_fids_plot = self.moving_plot.scatter(moving_points[:, 0],
+                                                         moving_points[:, 1],
+                                                         s=36, c='g')
 
         self.fids_text.remove()
         self.fids_text = self.fixed_plot.text(
@@ -153,8 +192,8 @@ class AddFiducialMarker:
     marker.
     """
 
-    def __init__(self, fig, plotter, target,
-                 fixed_fle, moving_fle, logger):
+    def __init__(self, fig, plotter,
+                 pbr, logger):
         """
         :params fig: the matplot lib figure to get mouse events from
         :params fixed_plot: the fixed image subplot
@@ -164,13 +203,15 @@ class AddFiducialMarker:
         :params moving_fle: the standard deviations of the moving image fle
         """
 
-        self.pbr = PointBasedRegistration(target, fixed_fle, moving_fle)
+        self.pbr = pbr
         self.plotter = plotter
+        self.fig = fig
         self.cid = fig.canvas.mpl_connect('button_press_event', self)
-        self.fixed_points = None 
-        self.moving_points = None
-        self.reset_fiducuals()
         self.logger = logger
+        self.fixed_points = None
+        self.moving_points = None
+        self.fids_plot = None
+        self.reset_fiducials()
 
     def __call__(self, event):
         if event.xdata is not None:
@@ -188,13 +229,15 @@ class AddFiducialMarker:
                 self.moving_points = np.concatenate(
                     (self.moving_points, moving_point), axis=0)
 
+                print(self.fixed_points)
                 [success, fre, mean_fle, expected_tre_sq,
                  expected_fre, transformed_target_2d,
                  actual_tre, no_fids] = self.pbr.register(
                      self.fixed_points, self.moving_points)
 
                 self.plotter.plot_fiducials(self.fixed_points,
-                                            self.moving_points, no_fids)
+                                            self.moving_points,
+                                            no_fids)
 
                 if success:
                     expected_tre = math.sqrt(expected_tre_sq)
@@ -204,12 +247,17 @@ class AddFiducialMarker:
                     self.logger.log_result(
                         actual_tre, fre, expected_tre, expected_fre, mean_fle,
                         no_fids)
-                plt.show()
+                self.fig.canvas.draw()
 
-    def reset_fiducuals(self):
+    def reset_fiducials(self):
+        """
+        resets the fiducial markers
+        """
         self.fixed_points = np.zeros((0, 3), dtype=np.float64)
         self.moving_points = np.zeros((0, 3), dtype=np.float64)
-
+        self.plotter.plot_fiducials(self.fixed_points,
+                                    self.moving_points,
+                                    0)
 
 def _is_valid_fiducial(_unused_fiducial_location):
     """
@@ -224,14 +272,13 @@ def _add_guassian_fle_to_fiducial(fiducial, fle_standard_deviation):
 
 def make_target_point(outline, edge_buffer=0.9):
     """
-    returns a target point, that should lie 
+    returns a target point, that should lie
     within the outline.
     """
     #let's assume the anatomy is a circle with
     #centre, and radius
-    centre = np.mean(outline,0)
-    max_radius = np.min((np.max(outline,0) - np.min(outline,0))/2)*edge_buffer
-
+    centre = np.mean(outline, 0)
+    max_radius = np.min((np.max(outline, 0) - np.min(outline, 0))/2)*edge_buffer
     radius = np.random.uniform(low=0.0, high=max_radius)
     angle = np.random.uniform(low=0.0, high=math.pi*2.0)
     x_ord = radius * math.cos(angle) + centre[0]
@@ -264,15 +311,17 @@ class InteractiveRegistration:
 
         self.intialise_registration()
 
-        self.cid = self.fig.canvas.mpl_connect('key_press_event', 
+        self.cid = self.fig.canvas.mpl_connect('key_press_event',
                                                self.keypress_event)
 
         plt.show()
 
     def keypress_event(self, event):
+        """
+        handle a key press event
+        """
         if event.key == 'r':
             self.intialise_registration()
-        print("Got event, ", event.key)
 
     def intialise_registration(self):
         """
@@ -282,29 +331,22 @@ class InteractiveRegistration:
         outline, _initial_guess = find_outer_contour(img)
         target_point = make_target_point(outline)
 
-        self.subplot[0].imshow(img)
-        self.subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
-        self.subplot[1].set_ylim([0, img.shape[0]])
-        self.subplot[1].set_xlim([0, img.shape[1]])
-        self.subplot[1].axis([0, img.shape[1], img.shape[0], 0])
-        self.subplot[1].axis('scaled')
-
-        self.subplot[0].scatter(target_point[0, 0], 
-                                target_point[0, 1], s=64, c='r')
+        self.plotter.initialise_new_reg(img, target_point, outline)
 
         moving_fle = np.zeros((1, 3), dtype=np.float64)
         fixed_fle = np.zeros((1, 3), dtype=np.float64)
         fixed_fle[0, 0] = 2.0
         fixed_fle[0, 1] = 2.0
 
-        del self.mouse_int
+        pbr = PointBasedRegistration(target_point, fixed_fle, moving_fle)
 
-        self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
-                                           target_point, fixed_fle, moving_fle,
-                                           self.logger)
+        if self.mouse_int is None:
+            self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
+                                               pbr, self.logger)
+        else:
+            self.mouse_int.reset_fiducials()
 
-
-
+        self.fig.canvas.draw()
 
 def plot_results():
     """
