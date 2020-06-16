@@ -46,7 +46,6 @@ class PointBasedRegistration:
         self.target = target
         self.fixed_fle = fixed_fle
         self.moving_fle = moving_fle
-        print("set target = ", self.target, self)
 
     def register(self, fixed_points, moving_points):
         """
@@ -54,19 +53,17 @@ class PointBasedRegistration:
         """
         success = False
         fre = 0.0
-        mean_fle = 0.0
         expected_tre = 0.0
         expected_fre = 0.0
         transformed_target_2d = [-1.0, -1.0]
         actual_tre = 0.0
 
+        mean_fle = expected_absolute_value(self.fixed_fle)
         no_fids = fixed_points.shape[0]
-        print("trying to register  target = ", self.target, self)
 
         if no_fids > 2:
             rotation, translation, fre = orthogonal_procrustes(
                 fixed_points, moving_points)
-            mean_fle = expected_absolute_value(self.fixed_fle)
             mean_fle_squared = mean_fle * mean_fle
             expected_tre = compute_tre_from_fle_2d(
                 moving_points[:, 0:2],
@@ -85,7 +82,6 @@ class PointBasedRegistration:
                 transformed_target_2d - self.target[:, 0:2])
             success = True
 
-            print (self.target, transformed_target_2d)
 
         return [success, fre, mean_fle, expected_tre, expected_fre,
                 transformed_target_2d, actual_tre, no_fids]
@@ -106,11 +102,13 @@ class PlotRegistrations():
         self.moving_plot = moving_plot
 
         self.fids_text = None
+        self.fle_text = None
         self.tre_text = None
         self.exp_tre_text = None
         self.fre_text = None
         self.exp_fre_text = None
         self.target_scatter = None
+        self.trans_target_plot = None
         self.fixed_fids_plot = None
         self.moving_fids_plot = None
 
@@ -127,6 +125,7 @@ class PlotRegistrations():
 
         if self.fids_text is not None:
             self.fids_text.remove()
+            self.fle_text.remove()
             self.tre_text.remove()
             self.exp_tre_text.remove()
             self.fre_text.remove()
@@ -136,21 +135,26 @@ class PlotRegistrations():
         self.target_scatter = self.moving_plot.scatter(target_point[0, 0],
                                                        target_point[0, 1],
                                                        s=64, c='r')
+        if self.trans_target_plot is not None:
+            self.trans_target_plot.remove()
+            self.trans_target_plot = None
 
         self.fids_text = self.fixed_plot.text(
             210, 190, 'Number of fids = {0:}'.format(0))
+        self.fle_text = self.fixed_plot.text(
+            210, 210, 'Expected FLE = {0:.3f}'.format(0))
         self.tre_text = self.fixed_plot.text(
-            210, 210, 'Actual TRE = {0:.3f}'.format(0))
+            210, 230, 'Actual TRE = {0:.3f}'.format(0))
         self.exp_tre_text = self.fixed_plot.text(
-            210, 230, 'Expected TRE = {0:.3f}'.format(math.sqrt(0)))
+            210, 250, 'Expected TRE = {0:.3f}'.format(math.sqrt(0)))
         self.fre_text = self.fixed_plot.text(
-            210, 250, 'FRE = {0:.3f}'.format(0))
+            210, 270, 'FRE = {0:.3f}'.format(0))
         self.exp_fre_text = self.fixed_plot.text(
-            210, 270, 'Expected FRE = {0:.3f}'.format(0))
+            210, 290, 'Expected FRE = {0:.3f}'.format(0))
 
 
 
-    def plot_fiducials(self, fixed_points, moving_points, no_fids):
+    def plot_fiducials(self, fixed_points, moving_points, no_fids, mean_fle):
         """
         Updates plot with fiducial data
         """
@@ -172,6 +176,9 @@ class PlotRegistrations():
             210, 190,
             'Number of fids = {0:}'.format(no_fids))
 
+        self.fle_text.remove()
+        self.fle_text = self.fixed_plot.text(
+            210, 210, 'Expected FLE = {0:.3f}'.format(mean_fle))
 
     def plot_registration_result(self, actual_tre, expected_tre,
                                  fre, expected_fre, transformed_target_2d):
@@ -184,19 +191,23 @@ class PlotRegistrations():
         self.exp_fre_text.remove()
 
         self.tre_text = self.fixed_plot.text(
-            210, 210, 'Actual TRE = {0:.3f}'.format(actual_tre))
+            210, 230, 'Actual TRE = {0:.3f}'.format(actual_tre))
         self.exp_tre_text = self.fixed_plot.text(
-            210, 230,
+            210, 250,
             'Expected TRE = {0:.3f}'.format(
                 expected_tre))
         self.fre_text = self.fixed_plot.text(
-            210, 250, 'FRE = {0:.3f}'.format(fre))
+            210, 270, 'FRE = {0:.3f}'.format(fre))
         self.exp_fre_text = self.fixed_plot.text(
-            210, 270, 'Expected FRE = {0:.3f}'.format(expected_fre))
+            210, 290, 'Expected FRE = {0:.3f}'.format(expected_fre))
 
-        self.fixed_plot.scatter(transformed_target_2d[0],
-                                transformed_target_2d[1],
-                                s=64, c='r')
+        if self.trans_target_plot is not None:
+            self.trans_target_plot.remove()
+
+        self.trans_target_plot = self.fixed_plot.scatter(
+            transformed_target_2d[0],
+            transformed_target_2d[1],
+            s=64, c='r')
 
 
 class AddFiducialMarker:
@@ -242,8 +253,6 @@ class AddFiducialMarker:
                 self.moving_points = np.concatenate(
                     (self.moving_points, moving_point), axis=0)
 
-                print(self.fixed_points)
-                print("Registering target: ", self.pbr.target)
                 [success, fre, mean_fle, expected_tre_sq,
                  expected_fre, transformed_target_2d,
                  actual_tre, no_fids] = self.pbr.register(
@@ -251,7 +260,8 @@ class AddFiducialMarker:
 
                 self.plotter.plot_fiducials(self.fixed_points,
                                             self.moving_points,
-                                            no_fids)
+                                            no_fids,
+                                            mean_fle)
 
                 if success:
                     expected_tre = math.sqrt(expected_tre_sq)
@@ -271,7 +281,7 @@ class AddFiducialMarker:
         self.moving_points = np.zeros((0, 3), dtype=np.float64)
         self.plotter.plot_fiducials(self.fixed_points,
                                     self.moving_points,
-                                    0)
+                                    0, 0)
 
 
 def _is_valid_fiducial(_unused_fiducial_location):
@@ -353,9 +363,10 @@ class InteractiveRegistration:
         fixed_fle = np.zeros((1, 3), dtype=np.float64)
         fixed_fle[0, 0] = 2.0
         fixed_fle[0, 1] = 2.0
-        
+
         if self.pbr is None:
-            self.pbr = PointBasedRegistration(target_point, fixed_fle, moving_fle)
+            self.pbr = PointBasedRegistration(target_point, fixed_fle, 
+                                              moving_fle)
         else:
             self.pbr.reinit(target_point, fixed_fle, moving_fle)
 
