@@ -255,13 +255,31 @@ class InteractiveRegistration:
         detected screen points, which you can click on
         to measure distances
         """
+
+        fig, subplot = plt.subplots(1, 2, figsize=(18, 8))
+
+        log_config = {"logger" : {
+            "log file name" : "fred_results.log",
+            "overwrite existing" : False
+            }}
+
+        logger = Logger(log_config)
+        self.mouse_int = None
+
+        self.intialise_registration(image_file_name, logger, fig, subplot)
+
+        _ = KeyBoardEvent(fig)
+
+        plt.show()
+
+    def intialise_registration(self, image_file_name, logger, fig, subplot):
+        """
+        sets up the registration
+        """
         target_point = make_target_point()
         img = skimage.io.imread(image_file_name)
         outline, _initial_guess = find_outer_contour(img)
 
-        self.intialise_registration()
-
-        fig, subplot = plt.subplots(1, 2, figsize=(18, 8))
         subplot[0].imshow(img)
         subplot[1].plot(outline[:, 1], outline[:, 0], '-b', lw=3)
         subplot[1].set_ylim([0, img.shape[0]])
@@ -276,23 +294,13 @@ class InteractiveRegistration:
         fixed_fle[0, 0] = 2.0
         fixed_fle[0, 1] = 2.0
 
-        log_config = {"logger" : {
-            "log file name" : "fred_results.log",
-            "overwrite existing" : False
-            }}
+        del self.mouse_int
 
-        logger = Logger(log_config)
+        self.mouse_int = AddFiducialMarker(fig, subplot[1], subplot[0],
+                                           target_point, fixed_fle, moving_fle,
+                                           logger)
 
-        _ = AddFiducialMarker(fig, subplot[1], subplot[0],
-                              target_point, fixed_fle, moving_fle, logger)
 
-        _ = KeyBoardEvent(fig)
-        plt.show()
-
-    def intialise_registration(self):
-        """
-        sets up the registration
-        """
 
 
 def plot_results():
