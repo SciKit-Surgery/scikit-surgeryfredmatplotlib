@@ -172,11 +172,14 @@ class PlotRegistrations():
         self.moving_plot = moving_plot
 
         self.target_scatter = None
-        self.trans_target_plot = None
-        self.fixed_fids_plot = None
+        self.trans_target_plots = [None, None]
+        self.fixed_fids_plots = [None, None]
         self.moving_fids_plot = None
 
         self.stats_plot = PlotRegStatistics(fixed_plot)
+
+        self.show_actual_positions = True
+        self.target_point = None
 
     def initialise_new_reg(self, img, target_point, outline):
         """
@@ -188,17 +191,21 @@ class PlotRegistrations():
         self.fixed_plot.set_xlim([0, img.shape[1]])
         self.fixed_plot.axis([0, img.shape[1], img.shape[0], 0])
         self.fixed_plot.axis('scaled')
+        self.target_point = target_point
 
         if self.target_scatter is not None:
             self.target_scatter.remove()
 
-        self.target_scatter = self.moving_plot.scatter(target_point[0, 0],
-                                                       target_point[0, 1],
-                                                       s=64, c='r')
-        if self.trans_target_plot is not None:
-            self.trans_target_plot.remove()
-            self.trans_target_plot = None
+        self.target_scatter = self.moving_plot.scatter(self.target_point[0, 0],
+                                                       self.target_point[0, 1],
+                                                       s=144, c='r')
+        if self.trans_target_plots[0] is not None:
+            self.trans_target_plots[0].remove()
+            self.trans_target_plots[0] = None
 
+        if self.trans_target_plots[1] is not None:
+            self.trans_target_plots[1].remove()
+            self.trans_target_plots[1] = None
 
         self.stats_plot.update_stats_plot(0, 0, 0, 0)
 
@@ -213,17 +220,30 @@ class PlotRegistrations():
         Updates plot with fiducial data
         """
 
-        if self.fixed_fids_plot is not None:
-            self.fixed_fids_plot.remove()
+        if self.fixed_fids_plots[0] is not None:
+            self.fixed_fids_plots[0].remove()
         if self.moving_fids_plot is not None:
             self.moving_fids_plot.remove()
 
-        self.fixed_fids_plot = self.fixed_plot.scatter(fixed_points[:, 0],
-                                                       fixed_points[:, 1],
-                                                       s=36, c='g')
+        if self.fixed_fids_plots[1] is not None:
+            self.fixed_fids_plots[1].remove()
+
+
+        self.fixed_fids_plots[0] = self.fixed_plot.scatter(fixed_points[:, 0],
+                                                           fixed_points[:, 1],
+                                                           s=64, c='g',
+                                                           marker='o')
         self.moving_fids_plot = self.moving_plot.scatter(moving_points[:, 0],
                                                          moving_points[:, 1],
-                                                         s=36, c='g')
+                                                         s=64, c='g',
+                                                         marker="o")
+
+        if self.show_actual_positions:
+            self.fixed_fids_plots[1] = self.fixed_plot.scatter(
+                moving_points[:, 0],
+                moving_points[:, 1],
+                s=36, c='black',
+                marker='+')
 
         self.stats_plot.update_fids_stats(no_fids, mean_fle)
 
@@ -236,14 +256,23 @@ class PlotRegistrations():
         self.stats_plot.update_stats_plot(actual_tre, expected_tre,
                                           fre, expected_fre)
 
-        if self.trans_target_plot is not None:
-            self.trans_target_plot.remove()
 
-        self.trans_target_plot = self.fixed_plot.scatter(
+        if self.trans_target_plots[0] is not None:
+            self.trans_target_plots[0].remove()
+
+        if self.trans_target_plots[1] is not None:
+            self.trans_target_plots[1].remove()
+
+        self.trans_target_plots[0] = self.fixed_plot.scatter(
             transformed_target_2d[0],
             transformed_target_2d[1],
-            s=64, c='r')
+            s=144, c='r', marker='o')
 
+        if self.show_actual_positions:
+            self.trans_target_plots[1] = self.fixed_plot.scatter(
+                self.target_point[0, 0],
+                self.target_point[0, 1],
+                s=36, c='black', marker='+')
 
 class AddFiducialMarker:
     """
