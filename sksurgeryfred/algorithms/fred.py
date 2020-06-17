@@ -97,11 +97,13 @@ class PlotRegStatistics():
         """
         self.plot = plot
         self.fids_text = None
-        self.fle_text = None
         self.tre_text = None
         self.exp_tre_text = None
         self.fre_text = None
-        self.exp_fre_text = None
+
+        self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
+
+
 
     def update_stats_plot(self, tre, exp_tre, fre, exp_fre):
         """
@@ -113,17 +115,29 @@ class PlotRegStatistics():
             self.exp_tre_text.remove()
         if self.fre_text is not None:
             self.fre_text.remove()
-        if self.exp_fre_text is not None:
-            self.exp_fre_text.remove()
 
-        self.tre_text = self.plot.text(
-            210, 230, 'Actual TRE = {0:.3f}'.format(tre))
-        self.exp_tre_text = self.plot.text(
-            210, 250, 'Expected TRE = {0:.3f}'.format(exp_tre))
-        self.fre_text = self.plot.text(
-            210, 270, 'FRE = {0:.3f}'.format(fre))
-        self.exp_fre_text = self.plot.text(
-            210, 290, 'Expected FRE = {0:.3f}'.format(exp_fre))
+        stats_str = ('Expected FRE = {0:.2f}\n'.format(exp_fre) +
+                     'Expected TRE = {0:.2f}'.format(exp_tre))
+
+        actual_tre_str = ('Actual TRE = {0:.2f}'.format(tre))
+        actual_fre_str = ('Actual FRE = {0:.2f}'.format(fre))
+
+        self.exp_tre_text = self.plot.text(-1.05, 1.10, stats_str,
+                                           transform=self.plot.transAxes,
+                                           fontsize=26,
+                                           verticalalignment='top',
+                                           bbox=self.props)
+
+        self.tre_text = self.plot.text(-0.1, 1.10, actual_tre_str,
+                                       transform=self.plot.transAxes,
+                                       fontsize=26,
+                                       verticalalignment='top', bbox=self.props)
+
+        self.fre_text = self.plot.text(0.65, 1.10, actual_fre_str,
+                                       transform=self.plot.transAxes,
+                                       fontsize=26,
+                                       verticalalignment='top', bbox=self.props)
+
 
     def update_fids_stats(self, no_fids, mean_fle):
         """
@@ -131,15 +145,16 @@ class PlotRegStatistics():
         """
         if self.fids_text is not None:
             self.fids_text.remove()
-        if self.fle_text is not None:
-            self.fle_text.remove()
 
-        self.fids_text = self.plot.text(
-            210, 190,
-            'Number of fids = {0:}'.format(no_fids))
+        fids_str = ('Number of fids = {0:}\n'.format(no_fids) +
+                    'Expected FLE = {0:.2f}'.format(mean_fle))
 
-        self.fle_text = self.plot.text(
-            210, 210, 'Expected FLE = {0:.3f}'.format(mean_fle))
+        self.fids_text = self.plot.text(-1.95, 1.10, fids_str,
+                                        transform=self.plot.transAxes,
+                                        fontsize=26,
+                                        verticalalignment='top',
+                                        bbox=self.props)
+
 
 
 class PlotRegistrations():
@@ -186,6 +201,11 @@ class PlotRegistrations():
 
 
         self.stats_plot.update_stats_plot(0, 0, 0, 0)
+
+        self.moving_plot.set_title('Pre-Operative Image', y=-0.10,
+                                   fontsize=26)
+        self.fixed_plot.set_title('Patient in Theatre', y=-0.10,
+                                  fontsize=26)
 
 
     def plot_fiducials(self, fixed_points, moving_points, no_fids, mean_fle):
@@ -250,7 +270,7 @@ class AddFiducialMarker:
         self.fixed_points = None
         self.moving_points = None
         self.fids_plot = None
-        self.reset_fiducials()
+        self.reset_fiducials(0.0)
 
     def __call__(self, event):
         if event.xdata is not None:
@@ -288,7 +308,7 @@ class AddFiducialMarker:
                         no_fids)
                 self.fig.canvas.draw()
 
-    def reset_fiducials(self):
+    def reset_fiducials(self, mean_fle):
         """
         resets the fiducial markers
         """
@@ -296,7 +316,7 @@ class AddFiducialMarker:
         self.moving_points = np.zeros((0, 3), dtype=np.float64)
         self.plotter.plot_fiducials(self.fixed_points,
                                     self.moving_points,
-                                    0, 0)
+                                    0, mean_fle)
 
 
 def _is_valid_fiducial(_unused_fiducial_location):
@@ -389,8 +409,8 @@ class InteractiveRegistration:
         if self.mouse_int is None:
             self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
                                                self.pbr, self.logger)
-        else:
-            self.mouse_int.reset_fiducials()
+
+        self.mouse_int.reset_fiducials(expected_absolute_value(fixed_fle))
 
         self.fig.canvas.draw()
 
