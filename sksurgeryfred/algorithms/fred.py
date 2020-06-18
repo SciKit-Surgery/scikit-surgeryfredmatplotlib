@@ -122,13 +122,13 @@ class PlotRegStatistics():
         actual_tre_str = ('Actual TRE = {0:.2f}'.format(tre))
         actual_fre_str = ('Actual FRE = {0:.2f}'.format(fre))
 
-        self.exp_tre_text = self.plot.text(-1.05, 1.10, stats_str,
+        self.exp_tre_text = self.plot.text(-0.90, 1.10, stats_str,
                                            transform=self.plot.transAxes,
                                            fontsize=26,
                                            verticalalignment='top',
                                            bbox=self.props)
 
-        self.tre_text = self.plot.text(-0.1, 1.10, actual_tre_str,
+        self.tre_text = self.plot.text(-0.05, 1.10, actual_tre_str,
                                        transform=self.plot.transAxes,
                                        fontsize=26,
                                        verticalalignment='top', bbox=self.props)
@@ -149,7 +149,7 @@ class PlotRegStatistics():
         fids_str = ('Number of fids = {0:}\n'.format(no_fids) +
                     'Expected FLE = {0:.2f}'.format(mean_fle))
 
-        self.fids_text = self.plot.text(-1.95, 1.10, fids_str,
+        self.fids_text = self.plot.text(-1.65, 1.10, fids_str,
                                         transform=self.plot.transAxes,
                                         fontsize=26,
                                         verticalalignment='top',
@@ -387,7 +387,8 @@ class InteractiveRegistration:
         to measure distances
         """
 
-        self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 8))
+        self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 10))
+        self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
         self.plotter = PlotRegistrations(self.subplot[1], self.subplot[0])
 
         log_config = {"logger" : {
