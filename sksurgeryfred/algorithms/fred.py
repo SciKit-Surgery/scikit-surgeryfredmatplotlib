@@ -65,7 +65,7 @@ class PointBasedRegistration:
             rotation, translation, fre = orthogonal_procrustes(
                 fixed_points, moving_points)
             mean_fle_squared = mean_fle * mean_fle
-            expected_tre = compute_tre_from_fle_2d(
+            expected_tre_squared = compute_tre_from_fle_2d(
                 moving_points[:, 0:2],
                 mean_fle_squared,
                 self.target[:, 0:2])
@@ -83,7 +83,7 @@ class PointBasedRegistration:
             success = True
 
 
-        return [success, fre, mean_fle, expected_tre, expected_fre,
+        return [success, fre, mean_fle, expected_tre_squared, expected_fre,
                 transformed_target_2d, actual_tre, no_fids]
 
 
