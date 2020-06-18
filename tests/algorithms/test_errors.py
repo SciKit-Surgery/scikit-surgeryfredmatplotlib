@@ -207,6 +207,7 @@ def test_compute_tre_from_fle_2d_brute_force():
 
     
     tre_sum = 0
+    tre_sum_sqr = 0
     count = 0
     for _ in range (1000):
         moving_fids = fiducials
@@ -225,11 +226,13 @@ def test_compute_tre_from_fle_2d_brute_force():
         actual_tre = np.linalg.norm(
                 transformed_target_2d - target[:, 0:2])
         
+        tre_sum_sqr += actual_tre*actual_tre
         tre_sum += actual_tre
         count += 1
 
     mean_tre = tre_sum/float(count)
-    tre_sqr = mean_tre * mean_tre
-    print(mean_tre)
-    print (tre_sqr)
+    mean_tre_sqr = tre_sum_sqr/float(count)
+    tre_mean_sqr = mean_tre * mean_tre
+    print(mean_tre_sqr)
+    print (tre_mean_sqr)
     print (e2d.compute_tre_from_fle_2d(fiducials[:,0:2], mean_fle_squared, target[:, 0:2]))
