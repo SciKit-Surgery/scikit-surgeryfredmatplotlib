@@ -207,11 +207,10 @@ def test_compute_tre_from_fle_2d_brute_force():
 
     
     tre_sum = 0
+    count = 0
     for _ in range (1000):
         moving_fids = fiducials
         fixed_fids = fiducials + np.random.normal(scale=stddevs)
-        print (fixed_fids)
-        print (moving_fids)
     #next we try it with a brute force simulation
         rotation, translation, fre = orthogonal_procrustes(
                 fixed_fids, moving_fids)
@@ -227,6 +226,10 @@ def test_compute_tre_from_fle_2d_brute_force():
                 transformed_target_2d - target[:, 0:2])
         
         tre_sum += actual_tre
+        count += 1
 
-    print (tre_sum/1000.0)
+    mean_tre = tre_sum/float(count)
+    tre_sqr = mean_tre * mean_tre
+    print(mean_tre)
+    print (tre_sqr)
     print (e2d.compute_tre_from_fle_2d(fiducials[:,0:2], mean_fle_squared, target[:, 0:2]))
