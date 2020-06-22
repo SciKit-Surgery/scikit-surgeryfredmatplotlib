@@ -27,7 +27,7 @@ def _eav_by_brute_force(stddevs):
 
 def _easv_by_brute_force(stddevs):
 
-    cum_sum = np.zeros(np.array(stddevs).shape, dtype=np.float64)
+    cum_sum = 0.0
     for _ in range(1000):
             #cum_sum += np.absolute(np.random.normal(
         #    loc=np.zeros(np.array(stddevs).shape),
@@ -37,7 +37,7 @@ def _easv_by_brute_force(stddevs):
             loc=np.zeros(np.array(stddevs).shape),
             scale=stddevs)
         fre = np.linalg.norm(error)
-        cum_sum += fre * fre
+        cum_sum += (fre * fre)
 
     easv = cum_sum/1000.0
     print("brute easv = ", easv)
@@ -67,29 +67,29 @@ def _make_circle_fiducials(no_fids, centre, radius,
     return fixed_fids, moving_fids
 
 
-def test_point_based_registration():
+def test_point_based_registration_3_fids():
     """
     Tests for tre_from_fle_2d
     """
     
-    fixed_fle_std_dev = np.array([[1.0, 1.0, 0.0]], dtype=np.float64)
-    moving_fle_std_dev = np.array([[0.0, 0.0, 0.0]], dtype=np.float64)
+    fixed_fle_std_dev = np.array([1.0, 1.0, 0.0], dtype=np.float64)
+    moving_fle_std_dev = np.array([0.0, 0.0, 0.0], dtype=np.float64)
 
     fixed_fle_easv = _easv_by_brute_force(fixed_fle_std_dev)
     moving_fle_easv = _easv_by_brute_force(moving_fle_std_dev)
-    
+   
     target = np.array([[0.0, 0.0, 0.0]], dtype=np.float64)
 
-    pbr = fred.PointBasedRegistration(target, fixed_fle_std_dev, moving_fle_std_dev)
+    pbr = fred.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
     
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
-    radius = 1.0
+    radius = 2.0
 
     tresq_sum = 0
     fresq_sum = 0
     expected_tre_squared = 0
     expected_fre = 0
-    repeats = 100
+    repeats = 1000
     for _ in range(repeats):
         fixed_fids, moving_fids = _make_circle_fiducials(3, centre, radius, 
                                                          fixed_fle_std_dev,
@@ -108,4 +108,88 @@ def test_point_based_registration():
 
     print ("Exp TRE, actual ", expected_tre_squared, ave_tresq)
     print ("Exp FRE, actual ", expected_fre, ave_fresq)
+
+def test_point_based_registration_10_fids():
+    """
+    Tests for tre_from_fle_2d
+    """
+    
+    fixed_fle_std_dev = np.array([1.0, 1.0, 0.0], dtype=np.float64)
+    moving_fle_std_dev = np.array([0.0, 0.0, 0.0], dtype=np.float64)
+
+    fixed_fle_easv = _easv_by_brute_force(fixed_fle_std_dev)
+    moving_fle_easv = _easv_by_brute_force(moving_fle_std_dev)
+   
+    target = np.array([[0.0, 0.0, 0.0]], dtype=np.float64)
+
+    pbr = fred.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
+    
+    centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
+    radius = 2.0
+
+    tresq_sum = 0
+    fresq_sum = 0
+    expected_tre_squared = 0
+    expected_fre = 0
+    repeats = 1000
+    for _ in range(repeats):
+        fixed_fids, moving_fids = _make_circle_fiducials(10, centre, radius, 
+                                                         fixed_fle_std_dev,
+                                                         moving_fle_std_dev)
+
+
+        [success, fre, mean_fle, expected_tre_squared, expected_fre,
+            transformed_target_2d, actual_tre, no_fids] = pbr.register(
+                fixed_fids, moving_fids)
+        
+        tresq_sum += actual_tre*actual_tre
+        fresq_sum += fre*fre
+
+    ave_tresq = tresq_sum/repeats
+    ave_fresq = fresq_sum/repeats
+
+    print ("10 fids: Exp TRE, actual ", expected_tre_squared, ave_tresq)
+    print ("10 fids: Exp FRE, actual ", expected_fre, ave_fresq)
+
+def test_point_based_registration_10_fids_offset_target():
+    """
+    Tests for tre_from_fle_2d
+    """
+    
+    fixed_fle_std_dev = np.array([1.0, 1.0, 0.0], dtype=np.float64)
+    moving_fle_std_dev = np.array([0.0, 0.0, 0.0], dtype=np.float64)
+
+    fixed_fle_easv = _easv_by_brute_force(fixed_fle_std_dev)
+    moving_fle_easv = _easv_by_brute_force(moving_fle_std_dev)
+   
+    target = np.array([[2.0, 1.0, 0.0]], dtype=np.float64)
+
+    pbr = fred.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
+    
+    centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
+    radius = 2.0
+
+    tresq_sum = 0
+    fresq_sum = 0
+    expected_tre_squared = 0
+    expected_fre = 0
+    repeats = 1000
+    for _ in range(repeats):
+        fixed_fids, moving_fids = _make_circle_fiducials(10, centre, radius, 
+                                                         fixed_fle_std_dev,
+                                                         moving_fle_std_dev)
+
+
+        [success, fre, mean_fle, expected_tre_squared, expected_fre,
+            transformed_target_2d, actual_tre, no_fids] = pbr.register(
+                fixed_fids, moving_fids)
+        
+        tresq_sum += actual_tre*actual_tre
+        fresq_sum += fre*fre
+
+    ave_tresq = tresq_sum/repeats
+    ave_fresq = fresq_sum/repeats
+
+    print ("10 fids offset: Exp TRE, actual ", expected_tre_squared, ave_tresq)
+    print ("10 fids offset: Exp FRE, actual ", expected_fre, ave_fresq)
 

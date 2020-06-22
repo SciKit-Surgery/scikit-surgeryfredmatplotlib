@@ -21,31 +21,27 @@ class PointBasedRegistration:
     Does the registration and assoctiated measures
     """
 
-    def __init__(self, target, fixed_fle, moving_fle):
+    def __init__(self, target, fixed_fle_esv, moving_fle_esv):
         """
         :params target: 1x3 target point
-        :params fixed_fle: the standard deviations of the fixed image fle
-        :params moving_fle: the standard deviations of the moving image fle
+        :params fixed_fle_esv: the expected squared value of the fixed image fle
+        :params moving_fle_esv: the expected squared value of the moving image fle
         """
-        if not np.all(moving_fle == 0.0):
-            raise NotImplementedError("Currently we only support zero fle ")
-        if not fixed_fle[0, 0] == fixed_fle[0, 1]:
-            raise NotImplementedError("We only support isotropic fle")
-        if not fixed_fle[0, 2] == 0:
-            raise NotImplementedError("Currently we only 2D fle ")
+        if not moving_fle_esv == 0.0:
+            raise NotImplementedError("Currently we only support zero fle on moving image ")
 
         self.target = None
-        self.fixed_fle = None
-        self.moving_fle = None
-        self.reinit(target, fixed_fle, moving_fle)
+        self.fixed_fle_esv = None
+        self.moving_fle_esv = None
+        self.reinit(target, fixed_fle_esv, moving_fle_esv)
 
-    def reinit(self, target, fixed_fle, moving_fle):
+    def reinit(self, target, fixed_fle_esv, moving_fle_esv):
         """
         reinitiatilses the target and errors
         """
         self.target = target
-        self.fixed_fle = fixed_fle
-        self.moving_fle = moving_fle
+        self.fixed_fle_esv = fixed_fle_esv
+        self.moving_fle_esv = moving_fle_esv
 
     def register(self, fixed_points, moving_points):
         """
@@ -54,24 +50,21 @@ class PointBasedRegistration:
         success = False
         fre = 0.0
         expected_tre = 0.0
-        expected_fre = 0.0
+        expected_fre_sq = 0.0
         transformed_target_2d = [-1.0, -1.0]
         actual_tre = 0.0
 
-        mean_fle = expected_absolute_value(self.fixed_fle)
         no_fids = fixed_points.shape[0]
 
         if no_fids > 2:
             rotation, translation, fre = orthogonal_procrustes(
                 fixed_points, moving_points)
-            mean_fle_squared = mean_fle * mean_fle
             expected_tre_squared = compute_tre_from_fle_2d(
                 moving_points[:, 0:2],
-                mean_fle_squared,
+                self.fixed_fle_esv,
                 self.target[:, 0:2])
-            expected_fre = math.sqrt(
-                compute_fre_2d(moving_points[:, 0:2],
-                               mean_fle_squared))
+            expected_fre_sq = compute_fre_2d(moving_points[:, 0:2],
+                               self.fixed_fle_esv)
 
             transformed_target = np.matmul(rotation,
                                            self.target.transpose()) + \
@@ -83,7 +76,7 @@ class PointBasedRegistration:
             success = True
 
 
-        return [success, fre, mean_fle, expected_tre_squared, expected_fre,
+        return [success, fre, self.fixed_fle_esv, expected_tre_squared, expected_fre_sq,
                 transformed_target_2d, actual_tre, no_fids]
 
 
