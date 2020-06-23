@@ -2,7 +2,7 @@
 
 """User interfaces for sksurgeryFRED"""
 
-from sksurgeryfred.algorithms.fred import \
+from sksurgeryfred.plotting.plotting import \
                 plot_results
 
 def run_plotter():
