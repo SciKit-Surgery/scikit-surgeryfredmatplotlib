@@ -2,7 +2,8 @@
 
 """User interfaces for sksurgeryFRED"""
 
-from sksurgeryfred.algorithms.fred import InteractiveRegistration
+from sksurgeryfred.widgets.interactive_registration \
+                import InteractiveRegistration
 
 def run_demo(image):
     """Run FRED"""

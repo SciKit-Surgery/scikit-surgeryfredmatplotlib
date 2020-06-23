@@ -2,10 +2,10 @@
 
 """User interfaces for sksurgeryFRED"""
 
-from sksurgeryfred.algorithms.fred import \
+from sksurgeryfred.plotting.plotting import \
                 plot_results
 
-def run_plotter():
+def run_plotter(logfile):
     """Run FRED Plotter"""
 
-    plot_results()
+    plot_results(logfile)
