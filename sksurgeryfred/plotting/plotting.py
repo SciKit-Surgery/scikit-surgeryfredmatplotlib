@@ -17,13 +17,13 @@ def _plot_subresults(subplot, x_values, y_values):
     subplot.plot(x_values, intercept + slope * array(x_values), '-')
 
 
-def plot_results():
+def plot_results(logfile):
     """
     Plots the results  of multiple runs, from the log file.
     """
 
     log_config = {"logger" : {
-        "log file name" : "fred_results.log",
+        "log file name" : logfile,
         "overwrite existing" : False
         }}
 

@@ -17,6 +17,11 @@ def main(args=None):
         description=('Plot Results for Fiducial Registration' +
                      'Educational Demonstration'))
 
+    ## ADD POSITIONAL ARGUMENTS
+    parser.add_argument("logfile",
+                        type=str,
+                        help="Log file name")
+
     version_string = __version__
     friendly_version_string = version_string if version_string else 'unknown'
     parser.add_argument(
@@ -27,4 +32,4 @@ def main(args=None):
 
     args = parser.parse_args(args)
 
-    run_plotter()
+    run_plotter(args.logfile)
