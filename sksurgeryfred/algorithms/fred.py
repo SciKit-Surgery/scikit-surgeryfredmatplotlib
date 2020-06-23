@@ -8,11 +8,10 @@ import matplotlib.pyplot as plt
 import skimage.io
 
 from sksurgerycore.algorithms.procrustes import orthogonal_procrustes
+from sksurgerycore.algorithms.errors import compute_tre_from_fle, compute_fre_from_fle
 
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
-from sksurgeryfred.algorithms.errors_2d import compute_tre_from_fle_2d, \
-                                               compute_fre_2d, \
-                                               expected_absolute_value
+from sksurgeryfred.algorithms.errors_2d import expected_absolute_value
 
 from sksurgeryfred.logging.fred_logger import Logger
 
@@ -51,7 +50,6 @@ class PointBasedRegistration:
         fre = 0.0
         expected_tre = 0.0
         expected_fre_sq = 0.0
-        transformed_target_2d = [-1.0, -1.0]
         actual_tre = 0.0
 
         no_fids = fixed_points.shape[0]
@@ -59,25 +57,27 @@ class PointBasedRegistration:
         if no_fids > 2:
             rotation, translation, fre = orthogonal_procrustes(
                 fixed_points, moving_points)
-            expected_tre_squared = compute_tre_from_fle_2d(
-                moving_points[:, 0:2],
+            expected_tre_squared = compute_tre_from_fle(
+                moving_points[:, 0:3],
                 self.fixed_fle_esv,
-                self.target[:, 0:2])
-            expected_fre_sq = compute_fre_2d(moving_points[:, 0:2],
+                self.target[:, 0:3])
+            expected_fre_sq = compute_fre_from_fle(moving_points[:, 0:3],
                                self.fixed_fle_esv)
 
             transformed_target = np.matmul(rotation,
                                            self.target.transpose()) + \
                                            translation
-            transformed_target_2d = [transformed_target[0][0],
-                                     transformed_target[1][0]]
             actual_tre = np.linalg.norm(
-                transformed_target_2d - self.target[:, 0:2])
+                transformed_target - self.target[:, 0:3].transpose())
+            #print("target =", self.target)
+            #print("t_target = ", transformed_target)
+            #print("difference =", transformed_target - self.target[:, 0:3].transpose())
+            #print("tre = ", actual_tre)
             success = True
 
 
         return [success, fre, self.fixed_fle_esv, expected_tre_squared, expected_fre_sq,
-                transformed_target_2d, actual_tre, no_fids]
+                transformed_target[:, 0:3], actual_tre, no_fids]
 
 
 class PlotRegStatistics():
