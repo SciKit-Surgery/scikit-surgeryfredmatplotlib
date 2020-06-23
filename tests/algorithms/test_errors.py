@@ -1,12 +1,9 @@
 # coding=utf-8
 
 """Fiducial Registration Educational Demonstration tests"""
-import math
 import numpy as np
-import pytest
 
-from sksurgerycore.algorithms.procrustes import orthogonal_procrustes
-import sksurgeryfred.algorithms.errors_2d as e2d
+import sksurgeryfred.algorithms.errors as e2d
 
 # Pytest style
 
@@ -118,4 +115,3 @@ def test_expected_absolute_value_3d():
         assert np.isclose(eav, arith_eav, atol=0.0, rtol=0.0001)
         assert np.isclose(eav, _eav_by_brute_force(stddevs),
                           atol=0.0, rtol=0.15)
-

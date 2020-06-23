@@ -56,7 +56,7 @@ setup(
             'scikit-image',
             'ipykernel',
             'nbsphinx',
-            'scikit-surgerycore>0.6',
+            'scikit-surgerycore>0.6.5',
     ],
 
     entry_points={
