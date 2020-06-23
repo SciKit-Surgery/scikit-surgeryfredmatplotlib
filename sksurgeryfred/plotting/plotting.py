@@ -13,7 +13,7 @@ def _plot_subresults(subplot, x_values, y_values):
     subplot.scatter(x_values, y_values)
     slope, intercept = polyfit(array(x_values), array(y_values), 1)
     correl_coeff = corrcoef(array(x_values), array(y_values))[0, 1]
-    subplot.set_title("Corr. Coef. = {0:.3f}".format(correl_coeff))
+    subplot.set_title("Corr. Coef. = {0:.3f}".format(correl_coeff), fontsize=16)
     subplot.plot(x_values, intercept + slope * array(x_values), '-')
 
 
@@ -32,22 +32,24 @@ def plot_results(logfile):
     [actual_tres, actual_fres, expected_tres, expected_fres,
      mean_fles, no_fids] = logger.read_log()
 
-    _, subplot = plt.subplots(1, 5, figsize=(18, 8))
+    fig, subplot = plt.subplots(1, 5, figsize=(18, 8))
 
-    subplot[0].set_ylabel("TRE")
-    subplot[0].set_xlabel("Actual FRE")
+    fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D. Correlation Plots')
+
+    subplot[0].set_ylabel("TRE", fontsize=26)
+    subplot[0].set_xlabel("Actual FRE", fontsize=26)
     _plot_subresults(subplot[0], actual_fres, actual_tres)
 
-    subplot[1].set_xlabel("Expected TRE")
+    subplot[1].set_xlabel("Expected TRE", fontsize=26)
     _plot_subresults(subplot[1], expected_tres, actual_tres)
 
-    subplot[2].set_xlabel("Expected FRE")
+    subplot[2].set_xlabel("Expected FRE", fontsize=26)
     _plot_subresults(subplot[2], expected_fres, actual_tres)
 
-    subplot[3].set_xlabel("Expected FLE")
+    subplot[3].set_xlabel("Expected FLE", fontsize=26)
     _plot_subresults(subplot[3], mean_fles, actual_tres)
 
-    subplot[4].set_xlabel("Number of Fids.")
+    subplot[4].set_xlabel("Number of Fids.", fontsize=26)
     _plot_subresults(subplot[4], no_fids, actual_tres)
 
     plt.show()
