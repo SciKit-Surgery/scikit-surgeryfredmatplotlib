@@ -54,7 +54,7 @@ class PointBasedRegistration:
         expected_tre_squared = 0.0
         expected_fre_sq = 0.0
         actual_tre = 0.0
-
+        transformed_target = np.zeros(shape=(1, 3), dtype=np.float64)
         no_fids = fixed_points.shape[0]
 
         if no_fids > 2:
@@ -272,7 +272,7 @@ class AddFiducialMarker:
     """
 
     def __init__(self, fig, plotter,
-                 pbr, logger):
+                 pbr, logger, fixed_fle_sd, moving_fle_sd):
         """
         :params fig: the matplot lib figure to get mouse events from
         :params fixed_plot: the fixed image subplot
@@ -290,6 +290,9 @@ class AddFiducialMarker:
         self.fixed_points = None
         self.moving_points = None
         self.fids_plot = None
+        self.fixed_fle_sd = fixed_fle_sd
+        self.moving_fle_sd = moving_fle_sd
+
         self.reset_fiducials(0.0)
 
     def __call__(self, event):
@@ -300,19 +303,20 @@ class AddFiducialMarker:
 
             if _is_valid_fiducial(fiducial_location):
                 fixed_point = _add_guassian_fle_to_fiducial(
-                    fiducial_location, self.pbr.fixed_fle)
+                    fiducial_location, self.fixed_fle_sd)
                 moving_point = _add_guassian_fle_to_fiducial(
-                    fiducial_location, self.pbr.moving_fle)
+                    fiducial_location, self.moving_fle_sd)
                 self.fixed_points = np.concatenate(
                     (self.fixed_points, fixed_point), axis=0)
                 self.moving_points = np.concatenate(
                     (self.moving_points, moving_point), axis=0)
 
-                [success, fre, mean_fle, expected_tre_sq,
-                 expected_fre, transformed_target_2d,
+                [success, fre, mean_fle_sq, expected_tre_sq,
+                 expected_fre_sq, transformed_target_2d,
                  actual_tre, no_fids] = self.pbr.register(
                      self.fixed_points, self.moving_points)
 
+                mean_fle = math.sqrt(mean_fle_sq)
                 self.plotter.plot_fiducials(self.fixed_points,
                                             self.moving_points,
                                             no_fids,
@@ -320,6 +324,7 @@ class AddFiducialMarker:
 
                 if success:
                     expected_tre = math.sqrt(expected_tre_sq)
+                    expected_fre = math.sqrt(expected_fre_sq)
                     self.plotter.plot_registration_result(
                         actual_tre, expected_tre,
                         fre, expected_fre, transformed_target_2d)
@@ -328,7 +333,7 @@ class AddFiducialMarker:
                         no_fids)
                 self.fig.canvas.draw()
 
-    def reset_fiducials(self, mean_fle):
+    def reset_fiducials(self, mean_fle_sq):
         """
         resets the fiducial markers
         """
@@ -336,7 +341,7 @@ class AddFiducialMarker:
         self.moving_points = np.zeros((0, 3), dtype=np.float64)
         self.plotter.plot_fiducials(self.fixed_points,
                                     self.moving_points,
-                                    0, mean_fle)
+                                    0, math.sqrt(mean_fle_sq))
 
 
 def _is_valid_fiducial(_unused_fiducial_location):
@@ -348,7 +353,8 @@ def _is_valid_fiducial(_unused_fiducial_location):
 
 def _add_guassian_fle_to_fiducial(fiducial, fle_standard_deviation):
 
-    return np.random.normal(fiducial, fle_standard_deviation)
+    moved = np.random.normal(fiducial, fle_standard_deviation)
+    return moved
 
 def make_target_point(outline, edge_buffer=0.9):
     """
@@ -415,22 +421,25 @@ class InteractiveRegistration:
 
         self.plotter.initialise_new_reg(img, target_point, outline)
 
+        fle_sd = np.random.uniform(low=0.5, high=5.0)
         moving_fle = np.zeros((1, 3), dtype=np.float64)
-        fixed_fle = np.zeros((1, 3), dtype=np.float64)
-        fixed_fle[0, 0] = np.random.uniform(low=0.5, high=5.0)
-        fixed_fle[0, 1] = fixed_fle[0, 0]
+
+        fixed_fle = np.array([fle_sd, fle_sd, fle_sd], dtype=np.float64)
+        fixed_fle_eavs = expected_absolute_value(fixed_fle)
+        moving_fle_eavs = expected_absolute_value(moving_fle)
 
         if self.pbr is None:
-            self.pbr = PointBasedRegistration(target_point, fixed_fle,
-                                              moving_fle)
+            self.pbr = PointBasedRegistration(target_point, fixed_fle_eavs,
+                                              moving_fle_eavs)
         else:
-            self.pbr.reinit(target_point, fixed_fle, moving_fle)
+            self.pbr.reinit(target_point, fixed_fle_eavs, moving_fle_eavs)
 
         if self.mouse_int is None:
             self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
-                                               self.pbr, self.logger)
+                                               self.pbr, self.logger,
+                                               fixed_fle, moving_fle)
 
-        self.mouse_int.reset_fiducials(expected_absolute_value(fixed_fle))
+        self.mouse_int.reset_fiducials(fixed_fle_eavs)
 
         self.fig.canvas.draw()
 
