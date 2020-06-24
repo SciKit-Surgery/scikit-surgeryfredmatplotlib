@@ -5,7 +5,7 @@ import math
 import numpy as np
 
 from sksurgeryfred.algorithms.errors import expected_absolute_value
-import sksurgeryfred.algorithms.fred as fred
+import sksurgeryfred.algorithms.point_based_reg as pbreg
 
 def _make_circle_fiducials(no_fids, centre, radius,
                            fixed_stddevs, moving_stddevs):
@@ -43,7 +43,7 @@ def test_pbr_3_fids():
 
     target = np.array([[0.0, 0.0, 0.0]], dtype=np.float64)
 
-    pbr = fred.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
+    pbr = pbreg.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
 
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 20.0
@@ -85,7 +85,7 @@ def test_pbr_10_fids():
 
     target = np.array([[0.0, 0.0, 0.0]], dtype=np.float64)
 
-    pbr = fred.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
+    pbr = pbreg.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
 
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 2.0
@@ -127,7 +127,7 @@ def test_pbr_10_fids_offset_target():
 
     target = np.array([[2.0, 1.0, 0.0]], dtype=np.float64)
 
-    pbr = fred.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
+    pbr = pbreg.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
 
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 2.0
@@ -169,7 +169,7 @@ def test_pbr_20_fids_offset_target():
 
     target = np.array([[2.0, 1.0, 0.0]], dtype=np.float64)
 
-    pbr = fred.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
+    pbr = pbreg.PointBasedRegistration(target, fixed_fle_easv, moving_fle_easv)
 
     centre = np.array([0.0, 0.0, 0.0], dtype=np.float64)
     radius = 20.0

@@ -7,8 +7,9 @@ import skimage.io
 import numpy as np
 
 from sksurgeryfred.algorithms.fred import make_target_point, \
-                PlotRegistrations, \
-                PointBasedRegistration, AddFiducialMarker
+                PlotRegistrations, AddFiducialMarker
+
+from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.ablation import Ablator
