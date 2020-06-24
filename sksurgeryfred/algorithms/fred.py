@@ -14,10 +14,16 @@ class PlotRegStatistics():
         The plot to write on
         """
         self.plot = plot
-        self.fids_text = None
-        self.tre_text = None
-        self.exp_tre_text = None
-        self.fre_text = None
+
+        self.texts = {
+            'fids_text' : None,
+            'tre_text' : None,
+            'exp_tre_text' : None,
+            'fre_text' : None,
+            'score_text' : None,
+            'total_score_text' : None,
+            'margin_text' : None
+            }
 
         self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
 
@@ -27,12 +33,12 @@ class PlotRegStatistics():
         """
         Updates the statistics display
         """
-        if self.tre_text is not None:
-            self.tre_text.remove()
-        if self.exp_tre_text is not None:
-            self.exp_tre_text.remove()
-        if self.fre_text is not None:
-            self.fre_text.remove()
+        if self.texts.get('tre_text') is not None:
+            self.texts.get('tre_text').remove()
+        if self.texts.get('exp_tre_text') is not None:
+            self.texts.get('exp_tre_text').remove()
+        if self.texts.get('fre_text') is not None:
+            self.texts.get('fre_text').remove()
 
         stats_str = ('Expected FRE = {0:.2f}\n'.format(exp_fre) +
                      'Expected TRE = {0:.2f}'.format(exp_tre))
@@ -40,39 +46,32 @@ class PlotRegStatistics():
         actual_tre_str = ('Actual TRE = {0:.2f}'.format(tre))
         actual_fre_str = ('Actual FRE = {0:.2f}'.format(fre))
 
-        self.exp_tre_text = self.plot.text(-0.90, 1.10, stats_str,
-                                           transform=self.plot.transAxes,
-                                           fontsize=26,
-                                           verticalalignment='top',
-                                           bbox=self.props)
+        self.texts['exp_tre_text'] = self.plot.text(
+            -0.90, 1.10, stats_str, transform=self.plot.transAxes,
+            fontsize=26, verticalalignment='top', bbox=self.props)
 
-        self.tre_text = self.plot.text(-0.05, 1.10, actual_tre_str,
-                                       transform=self.plot.transAxes,
-                                       fontsize=26,
-                                       verticalalignment='top', bbox=self.props)
+        self.texts['tre_text'] = self.plot.text(
+            -0.05, 1.10, actual_tre_str, transform=self.plot.transAxes,
+            fontsize=26, verticalalignment='top', bbox=self.props)
 
-        self.fre_text = self.plot.text(0.65, 1.10, actual_fre_str,
-                                       transform=self.plot.transAxes,
-                                       fontsize=26,
-                                       verticalalignment='top', bbox=self.props)
+        self.texts['fre_text'] = self.plot.text(
+            0.65, 1.10, actual_fre_str, transform=self.plot.transAxes,
+            fontsize=26, verticalalignment='top', bbox=self.props)
 
 
     def update_fids_stats(self, no_fids, mean_fle):
         """
         Updates the fids stats display
         """
-        if self.fids_text is not None:
-            self.fids_text.remove()
+        if self.texts.get('fids_text') is not None:
+            self.texts.get('fids_text').remove()
 
         fids_str = ('Number of fids = {0:}\n'.format(no_fids) +
                     'Expected FLE = {0:.2f}'.format(mean_fle))
 
-        self.fids_text = self.plot.text(-1.65, 1.10, fids_str,
-                                        transform=self.plot.transAxes,
-                                        fontsize=26,
-                                        verticalalignment='top',
-                                        bbox=self.props)
-
+        self.texts['fids_text'] = self.plot.text(
+            -1.65, 1.10, fids_str, transform=self.plot.transAxes,
+            fontsize=26, verticalalignment='top', bbox=self.props)
 
 
 class PlotRegistrations():
