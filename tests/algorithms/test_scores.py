@@ -106,4 +106,20 @@ def test_calc_score_miss():
     score = scores.calculate_score(
         target_centre, est_target_centre, target_radius, margin)
 
-    assert score == -500.0
+    assert score == -1000.0
+
+def test_calc_hit_with_damage():
+    """Hit all of the target and nothing else"""
+    target_centre = np.array([100.0, 20.0, 0.0])
+    est_target_centre = np.array([110.0, 20.0, 0.0])
+
+    target_radius = 10.0
+    margin = 10.0
+
+    score = scores.calculate_score(
+        target_centre, est_target_centre, target_radius, margin)
+
+    target_vol = math.pi * 4.0 / 3.0 * 1000.0
+    treatment_vol = math.pi * 4.0 / 3.0 * 20.0 * 20.0 * 20.0
+    myscore = 1000.0 - (1000.0 * (treatment_vol - target_vol)/treatment_vol)
+    assert score == myscore

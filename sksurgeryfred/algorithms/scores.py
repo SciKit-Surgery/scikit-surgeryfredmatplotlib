@@ -68,6 +68,6 @@ def calculate_score(target_centre, est_target_centre, target_radius, margin):
     healty_tissue_treated = \
                     (treatment_volume - overlap_volume) / treatment_volume
 
-    margin_penalty = -500.0 * healty_tissue_treated
+    margin_penalty = -1000.0 * healty_tissue_treated
 
     return treatment_score + margin_penalty
