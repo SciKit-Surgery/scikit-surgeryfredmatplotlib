@@ -28,13 +28,18 @@ class RegistrationGame:
         to measure distances
         """
 
-        self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 10))
+        self.fig, subplot = plt.subplots(1, 2, figsize=(20, 10))
         self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
-        self.stats_plot = PlotRegStatistics(self.subplot[1])
-        self.stats_plot.set_visibilities(True, True, True, True,
-                                         False, False, False)
+        self.stats_plot = PlotRegStatistics(subplot[1])
+        self.stats_plot.set_visibilities(True, True, False, False,
+                                         True, True, True)
 
-        self.plotter = PlotRegistrations(self.subplot[1], self.subplot[0],
+        self.total_score = 0
+        self.repeats = 0
+        self.stats_plot.update_last_score(0)
+        self.stats_plot.update_total_score(self.total_score)
+
+        self.plotter = PlotRegistrations(subplot[1], subplot[0],
                                          self.stats_plot)
 
         self.plotter.show_actual_positions = True
@@ -52,8 +57,8 @@ class RegistrationGame:
 
         self.intialise_registration()
 
-        self.cid = self.fig.canvas.mpl_connect('key_press_event',
-                                               self.keypress_event)
+        _ = self.fig.canvas.mpl_connect('key_press_event',
+                                        self.keypress_event)
 
         plt.show()
 
@@ -65,17 +70,24 @@ class RegistrationGame:
             self.intialise_registration()
 
         if event.key == "up":
-            self.ablation.increase_margin()
+            margin = self.ablation.increase_margin()
+            self.stats_plot.update_margin_stats(margin)
+            self.fig.canvas.draw()
 
         if event.key == "down":
-            self.ablation.decrease_margin()
+            margin = self.ablation.decrease_margin()
+            self.stats_plot.update_margin_stats(margin)
+            self.fig.canvas.draw()
 
         if event.key == "a":
             reg_ok, est_target = self.pbr.get_transformed_target()
             if reg_ok:
                 score = self.ablation.ablate(est_target)
                 if score is not None:
-                    print("Score = ", score)
+                    self.stats_plot.update_last_score(score)
+                    self.total_score += score
+                    self.stats_plot.update_total_score(self.total_score)
+                    self.fig.canvas.draw()
 
     def intialise_registration(self):
         """
@@ -109,5 +121,7 @@ class RegistrationGame:
 
         self.ablation.setup(margin=1.0, target=target_point,
                             target_radius=10.0)
+
+        self.stats_plot.update_margin_stats(1.0)
 
         self.fig.canvas.draw()

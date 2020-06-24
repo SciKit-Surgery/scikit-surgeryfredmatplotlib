@@ -36,7 +36,8 @@ class Ablator():
         """
         if self.ready:
             self.margin += self.margin_increment
-            print("margin = {0:.1f}".format(self.margin))
+            return self.margin
+        return 0.0
 
     def decrease_margin(self):
         """
@@ -46,7 +47,9 @@ class Ablator():
             self.margin -= self.margin_increment
             if self.margin <= 0.0:
                 self.margin = 0.0
-            print("margin = {0:.1f}".format(self.margin))
+            return self.margin
+        return 0.0
+
 
     def ablate(self, estimated_target):
         """

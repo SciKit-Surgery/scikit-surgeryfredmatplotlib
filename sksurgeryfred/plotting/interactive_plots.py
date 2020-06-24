@@ -99,6 +99,47 @@ class PlotRegStatistics():
                 -1.65, 1.10, fids_str, transform=self.plot.transAxes,
                 fontsize=26, verticalalignment='top', bbox=self.props)
 
+    def update_margin_stats(self, margin):
+        """
+        Updates the margin text box
+        """
+        if self.texts.get('margin_text') is not None:
+            self.texts.get('margin_text').remove()
+
+        fids_str = ('Margin: {0:.1f}'.format(margin))
+
+        if self.visibilities.get('margin_text'):
+            self.texts['margin_text'] = self.plot.text(
+                1.05, 0.5, fids_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
+
+    def update_last_score(self, last_score):
+        """
+        Updates the margin text box
+        """
+        if self.texts.get('score_text') is not None:
+            self.texts.get('score_text').remove()
+
+        fids_str = ('Last Score\n{0:}'.format(last_score))
+        if self.visibilities.get('score_text'):
+            self.texts['score_text'] = self.plot.text(
+                1.05, 0.7, fids_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
+
+    def update_total_score(self, total_score):
+        """
+        Updates the margin text box
+        """
+        if self.texts.get('total_score_text') is not None:
+            self.texts.get('total_score_text').remove()
+
+        fids_str = ('Total Score\n{0:}'.format(total_score))
+
+        if self.visibilities.get('total_score_text'):
+            self.texts['total_score_text'] = self.plot.text(
+                1.05, 0.9, fids_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
+
 
 class PlotRegistrations():
     """

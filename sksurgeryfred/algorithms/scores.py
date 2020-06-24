@@ -72,4 +72,4 @@ def calculate_score(target_centre, est_target_centre, target_radius, margin):
 
     margin_penalty = -1000.0 * healty_tissue_treated
 
-    return treatment_score + margin_penalty
+    return round(treatment_score + margin_penalty)
