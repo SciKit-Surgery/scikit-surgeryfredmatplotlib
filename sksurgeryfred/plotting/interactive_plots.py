@@ -22,7 +22,33 @@ class PlotRegStatistics():
             'margin_text' : None
             }
 
+        self.visibilities = {
+            'fids_text' : False,
+            'tre_text' : False,
+            'exp_tre_text' : False,
+            'fre_text' : False,
+            'score_text' : False,
+            'total_score_text' : False,
+            'margin_text' : False
+            }
+
         self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
+
+    def set_visibilities(self, fids_text, tre_text, exp_tre_text, fre_text,
+                         score_text, total_score_text, margin_text):
+        """
+        Sets which text boxes will be visible
+        """
+        self.visibilities = {
+            'fids_text' : fids_text,
+            'tre_text' : tre_text,
+            'exp_tre_text' : exp_tre_text,
+            'fre_text' : fre_text,
+            'score_text' : score_text,
+            'total_score_text' : total_score_text,
+            'margin_text' : margin_text
+            }
+
 
     def update_stats_plot(self, tre, exp_tre, fre, exp_fre):
         """
@@ -41,17 +67,21 @@ class PlotRegStatistics():
         actual_tre_str = ('Actual TRE = {0:.2f}'.format(tre))
         actual_fre_str = ('Actual FRE = {0:.2f}'.format(fre))
 
-        self.texts['exp_tre_text'] = self.plot.text(
-            -0.90, 1.10, stats_str, transform=self.plot.transAxes,
-            fontsize=26, verticalalignment='top', bbox=self.props)
+        if self.visibilities.get('exp_tre_text'):
+            self.texts['exp_tre_text'] = self.plot.text(
+                -0.90, 1.10, stats_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
 
-        self.texts['tre_text'] = self.plot.text(
-            -0.05, 1.10, actual_tre_str, transform=self.plot.transAxes,
-            fontsize=26, verticalalignment='top', bbox=self.props)
 
-        self.texts['fre_text'] = self.plot.text(
-            0.65, 1.10, actual_fre_str, transform=self.plot.transAxes,
-            fontsize=26, verticalalignment='top', bbox=self.props)
+        if self.visibilities.get('tre_text'):
+            self.texts['tre_text'] = self.plot.text(
+                -0.05, 1.10, actual_tre_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
+
+        if self.visibilities.get('fre_text'):
+            self.texts['fre_text'] = self.plot.text(
+                0.65, 1.10, actual_fre_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
 
 
     def update_fids_stats(self, no_fids, mean_fle):
@@ -64,9 +94,10 @@ class PlotRegStatistics():
         fids_str = ('Number of fids = {0:}\n'.format(no_fids) +
                     'Expected FLE = {0:.2f}'.format(mean_fle))
 
-        self.texts['fids_text'] = self.plot.text(
-            -1.65, 1.10, fids_str, transform=self.plot.transAxes,
-            fontsize=26, verticalalignment='top', bbox=self.props)
+        if self.visibilities.get('fids_text'):
+            self.texts['fids_text'] = self.plot.text(
+                -1.65, 1.10, fids_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
 
 
 class PlotRegistrations():
@@ -74,7 +105,7 @@ class PlotRegistrations():
     Plots the results of registrations
     """
 
-    def __init__(self, fixed_plot, moving_plot):
+    def __init__(self, fixed_plot, moving_plot, stats_plot):
         """
         :params fixed_plot: the fixed image subplot
         :params moving_plot: the moving image subplot
@@ -88,7 +119,7 @@ class PlotRegistrations():
         self.fixed_fids_plots = [None, None]
         self.moving_fids_plot = None
 
-        self.stats_plot = PlotRegStatistics(fixed_plot)
+        self.stats_plot = stats_plot
 
         self.show_actual_positions = True
         self.target_point = None
