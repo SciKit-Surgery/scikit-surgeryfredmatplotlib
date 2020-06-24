@@ -11,6 +11,7 @@ from sksurgeryfred.algorithms.fred import make_target_point, \
                 PointBasedRegistration, AddFiducialMarker
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 from sksurgeryfred.algorithms.errors import expected_absolute_value
+from sksurgeryfred.algorithms.ablation import Ablator
 from sksurgeryfred.logging.fred_logger import Logger
 
 class InteractiveRegistration:
@@ -38,6 +39,7 @@ class InteractiveRegistration:
         self.mouse_int = None
         self.pbr = None
         self.image_file_name = image_file_name
+        self.ablation = Ablator()
 
         self.intialise_registration()
 
@@ -52,6 +54,12 @@ class InteractiveRegistration:
         """
         if event.key == 'r':
             self.intialise_registration()
+
+        if event.key == "up":
+            self.ablation.increase_margin()
+
+        if event.key == "down":
+            self.ablation.decrease_margin()
 
     def intialise_registration(self):
         """
@@ -82,5 +90,8 @@ class InteractiveRegistration:
                                                fixed_fle, moving_fle)
 
         self.mouse_int.reset_fiducials(fixed_fle_eavs)
+
+        self.ablation.setup(margin=1.0, target=target_point,
+                            target_radius=10.0)
 
         self.fig.canvas.draw()
