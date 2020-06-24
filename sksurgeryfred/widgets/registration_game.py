@@ -42,7 +42,7 @@ class RegistrationGame:
         self.plotter = PlotRegistrations(subplot[1], subplot[0],
                                          self.stats_plot)
 
-        self.plotter.show_actual_positions = True
+        self.plotter.show_actual_positions = False
 
         log_config = {"logger" : {
             "log file name" : "fred_results.log",
@@ -88,6 +88,19 @@ class RegistrationGame:
                     self.total_score += score
                     self.stats_plot.update_total_score(self.total_score)
                     self.fig.canvas.draw()
+                    if self.repeats < 20:
+                        self.intialise_registration()
+                        if self.repeats > 4:
+                            self.set_visibilities()
+                        self.repeats += 1
+                    else:
+                        print("Game Over")
+
+    def set_visibilities(self):
+        """
+        Some thing to set visibilities
+        """
+        return
 
     def intialise_registration(self):
         """
