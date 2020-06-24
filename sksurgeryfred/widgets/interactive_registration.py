@@ -7,8 +7,8 @@ import skimage.io
 import numpy as np
 
 from sksurgeryfred.algorithms.fred import make_target_point, \
-                PlotRegistrations, AddFiducialMarker
-
+                AddFiducialMarker
+from sksurgeryfred.plotting.interactive_plots import PlotRegistrations
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 from sksurgeryfred.algorithms.errors import expected_absolute_value
