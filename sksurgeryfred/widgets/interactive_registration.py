@@ -13,7 +13,6 @@ from sksurgeryfred.plotting.interactive_plots import PlotRegistrations, \
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 from sksurgeryfred.algorithms.errors import expected_absolute_value
-from sksurgeryfred.algorithms.ablation import Ablator
 from sksurgeryfred.logging.fred_logger import Logger
 
 class InteractiveRegistration:
@@ -48,7 +47,6 @@ class InteractiveRegistration:
         self.mouse_int = None
         self.pbr = None
         self.image_file_name = image_file_name
-        self.ablation = Ablator()
 
         self.intialise_registration()
 
@@ -93,8 +91,5 @@ class InteractiveRegistration:
                                                fixed_fle, moving_fle)
 
         self.mouse_int.reset_fiducials(fixed_fle_eavs)
-
-        self.ablation.setup(margin=1.0, target=target_point,
-                            target_radius=10.0)
 
         self.fig.canvas.draw()
