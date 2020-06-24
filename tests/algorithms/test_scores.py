@@ -80,3 +80,30 @@ def test_spheres_partial_overlap():
               (distance * distance + 2*distance*6.0 - 3.0 * 4.0))
 
     assert np.isclose(overlap, volume, atol=0.0, rtol=0.0)
+
+
+def test_calc_score_perfect():
+    """Hit all of the target and nothing else"""
+    target_centre = np.array([100.0, 20.0, 0.0])
+    est_target_centre = np.array([100.0, 20.0, 0.0])
+
+    target_radius = 10.0
+    margin = 0.0
+
+    score = scores.calculate_score(
+        target_centre, est_target_centre, target_radius, margin)
+
+    assert score == 1000.0
+
+def test_calc_score_miss():
+    """Miss target and nothing else"""
+    target_centre = np.array([100.0, 20.0, 0.0])
+    est_target_centre = np.array([-100.0, 20.0, 0.0])
+
+    target_radius = 10.0
+    margin = 0.0
+
+    score = scores.calculate_score(
+        target_centre, est_target_centre, target_radius, margin)
+
+    assert score == -500.0
