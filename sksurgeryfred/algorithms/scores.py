@@ -63,7 +63,9 @@ def calculate_score(target_centre, est_target_centre, target_radius, margin):
         target_radius, target_radius + margin)
 
     target_not_treated = (target_volume - overlap_volume) / target_volume
-    treatment_score = 1000.0 - target_not_treated * 1000.0
+    treatment_score = 1000.0
+    if target_not_treated > 0.0:
+        treatment_score = 0.0
 
     healty_tissue_treated = \
                     (treatment_volume - overlap_volume) / treatment_volume

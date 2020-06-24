@@ -4,6 +4,8 @@
 Functions for point based registration using Orthogonal Procrustes.
 """
 
+from sksurgeryfred.algorithms.scores import calculate_score
+
 class Ablator():
     """
     handles the simulated ablation for scikit-surgery fred
@@ -46,10 +48,12 @@ class Ablator():
                 self.margin = 0.0
             print("margin = {0:.1f}".format(self.margin))
 
-    def alate(self, estimated_target):
+    def ablate(self, estimated_target):
         """
         performs and ablation, returns a score.
         """
         if not self.ready:
-            return
-        print("Fire: ", estimated_target)
+            return None
+        score = calculate_score(self.target, estimated_target.transpose(),
+                                self.target_radius, self.margin)
+        return score

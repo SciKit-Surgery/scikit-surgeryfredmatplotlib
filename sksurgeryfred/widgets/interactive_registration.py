@@ -61,6 +61,13 @@ class InteractiveRegistration:
         if event.key == "down":
             self.ablation.decrease_margin()
 
+        if event.key == "a":
+            reg_ok, est_target = self.pbr.get_transformed_target()
+            if reg_ok:
+                score = self.ablation.ablate(est_target)
+                if score is not None:
+                    print("Score = ", score)
+
     def intialise_registration(self):
         """
         sets up the registration

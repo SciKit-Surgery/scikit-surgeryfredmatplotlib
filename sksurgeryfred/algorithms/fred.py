@@ -29,6 +29,7 @@ class PointBasedRegistration:
         self.target = None
         self.fixed_fle_esv = None
         self.moving_fle_esv = None
+        self.transformed_target = None
         self.reinit(target, fixed_fle_esv, moving_fle_esv)
 
     def reinit(self, target, fixed_fle_esv, moving_fle_esv):
@@ -38,6 +39,7 @@ class PointBasedRegistration:
         self.target = target
         self.fixed_fle_esv = fixed_fle_esv
         self.moving_fle_esv = moving_fle_esv
+        self.transformed_target = None
 
     def register(self, fixed_points, moving_points):
         """
@@ -48,7 +50,7 @@ class PointBasedRegistration:
         expected_tre_squared = 0.0
         expected_fre_sq = 0.0
         actual_tre = 0.0
-        transformed_target = np.zeros(shape=(1, 3), dtype=np.float64)
+        self.transformed_target = np.zeros(shape=(1, 3), dtype=np.float64)
         no_fids = fixed_points.shape[0]
 
         if no_fids > 2:
@@ -59,17 +61,26 @@ class PointBasedRegistration:
             expected_fre_sq = compute_fre_from_fle(moving_points[:, 0:3],
                                                    self.fixed_fle_esv)
 
-            transformed_target = np.matmul(rotation,
-                                           self.target.transpose()) + \
-                                           translation
+            self.transformed_target = np.matmul(rotation,
+                                                self.target.transpose()) + \
+                                               translation
             actual_tre = np.linalg.norm(
-                transformed_target - self.target[:, 0:3].transpose())
+                self.transformed_target - self.target[:, 0:3].transpose())
             success = True
 
 
         return [success, fre, self.fixed_fle_esv, expected_tre_squared,
-                expected_fre_sq, transformed_target[:, 0:3], actual_tre,
+                expected_fre_sq, self.transformed_target[:, 0:3], actual_tre,
                 no_fids]
+
+    def get_transformed_target(self):
+        """
+        Returns transformed target and status
+        """
+        if self.transformed_target is not None:
+            return True, self.transformed_target[:, 0:3]
+
+        return False, None
 
 
 class PlotRegStatistics():
