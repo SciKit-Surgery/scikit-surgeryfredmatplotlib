@@ -16,7 +16,7 @@ from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.ablation import Ablator
 from sksurgeryfred.logging.fred_logger import Logger
 
-class InteractiveRegistration:
+class RegistrationGame:
     """
     an interactive window for doing live registration
     """
@@ -63,6 +63,19 @@ class InteractiveRegistration:
         """
         if event.key == 'r':
             self.intialise_registration()
+
+        if event.key == "up":
+            self.ablation.increase_margin()
+
+        if event.key == "down":
+            self.ablation.decrease_margin()
+
+        if event.key == "a":
+            reg_ok, est_target = self.pbr.get_transformed_target()
+            if reg_ok:
+                score = self.ablation.ablate(est_target)
+                if score is not None:
+                    print("Score = ", score)
 
     def intialise_registration(self):
         """
