@@ -5,260 +5,6 @@ calibration and tracking
 import math
 import numpy as np
 
-from sksurgerycore.algorithms.procrustes import orthogonal_procrustes
-from sksurgerycore.algorithms.errors import compute_tre_from_fle, \
-                compute_fre_from_fle
-
-
-class PointBasedRegistration:
-    """
-    Does the registration and assoctiated measures
-    """
-
-    def __init__(self, target, fixed_fle_esv, moving_fle_esv):
-        """
-        :params target: 1x3 target point
-        :params fixed_fle_esv: the expected squared value of the fixed image fle
-        :params moving_fle_esv: the expected squared value of the moving
-            image fle
-        """
-        if not moving_fle_esv == 0.0:
-            raise NotImplementedError("Currently we only support zero" +
-                                      "fle on moving image ")
-
-        self.target = None
-        self.fixed_fle_esv = None
-        self.moving_fle_esv = None
-        self.reinit(target, fixed_fle_esv, moving_fle_esv)
-
-    def reinit(self, target, fixed_fle_esv, moving_fle_esv):
-        """
-        reinitiatilses the target and errors
-        """
-        self.target = target
-        self.fixed_fle_esv = fixed_fle_esv
-        self.moving_fle_esv = moving_fle_esv
-
-    def register(self, fixed_points, moving_points):
-        """
-        Does the registration
-        """
-        success = False
-        fre = 0.0
-        expected_tre_squared = 0.0
-        expected_fre_sq = 0.0
-        actual_tre = 0.0
-        transformed_target = np.zeros(shape=(1, 3), dtype=np.float64)
-        no_fids = fixed_points.shape[0]
-
-        if no_fids > 2:
-            rotation, translation, fre = orthogonal_procrustes(
-                fixed_points, moving_points)
-            expected_tre_squared = compute_tre_from_fle(
-                moving_points[:, 0:3], self.fixed_fle_esv, self.target[:, 0:3])
-            expected_fre_sq = compute_fre_from_fle(moving_points[:, 0:3],
-                                                   self.fixed_fle_esv)
-
-            transformed_target = np.matmul(rotation,
-                                           self.target.transpose()) + \
-                                           translation
-            actual_tre = np.linalg.norm(
-                transformed_target - self.target[:, 0:3].transpose())
-            success = True
-
-
-        return [success, fre, self.fixed_fle_esv, expected_tre_squared,
-                expected_fre_sq, transformed_target[:, 0:3], actual_tre,
-                no_fids]
-
-
-class PlotRegStatistics():
-    """
-    writes the registration statistics
-    """
-    def __init__(self, plot):
-        """
-        The plot to write on
-        """
-        self.plot = plot
-        self.fids_text = None
-        self.tre_text = None
-        self.exp_tre_text = None
-        self.fre_text = None
-
-        self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
-
-
-
-    def update_stats_plot(self, tre, exp_tre, fre, exp_fre):
-        """
-        Updates the statistics display
-        """
-        if self.tre_text is not None:
-            self.tre_text.remove()
-        if self.exp_tre_text is not None:
-            self.exp_tre_text.remove()
-        if self.fre_text is not None:
-            self.fre_text.remove()
-
-        stats_str = ('Expected FRE = {0:.2f}\n'.format(exp_fre) +
-                     'Expected TRE = {0:.2f}'.format(exp_tre))
-
-        actual_tre_str = ('Actual TRE = {0:.2f}'.format(tre))
-        actual_fre_str = ('Actual FRE = {0:.2f}'.format(fre))
-
-        self.exp_tre_text = self.plot.text(-0.90, 1.10, stats_str,
-                                           transform=self.plot.transAxes,
-                                           fontsize=26,
-                                           verticalalignment='top',
-                                           bbox=self.props)
-
-        self.tre_text = self.plot.text(-0.05, 1.10, actual_tre_str,
-                                       transform=self.plot.transAxes,
-                                       fontsize=26,
-                                       verticalalignment='top', bbox=self.props)
-
-        self.fre_text = self.plot.text(0.65, 1.10, actual_fre_str,
-                                       transform=self.plot.transAxes,
-                                       fontsize=26,
-                                       verticalalignment='top', bbox=self.props)
-
-
-    def update_fids_stats(self, no_fids, mean_fle):
-        """
-        Updates the fids stats display
-        """
-        if self.fids_text is not None:
-            self.fids_text.remove()
-
-        fids_str = ('Number of fids = {0:}\n'.format(no_fids) +
-                    'Expected FLE = {0:.2f}'.format(mean_fle))
-
-        self.fids_text = self.plot.text(-1.65, 1.10, fids_str,
-                                        transform=self.plot.transAxes,
-                                        fontsize=26,
-                                        verticalalignment='top',
-                                        bbox=self.props)
-
-
-
-class PlotRegistrations():
-    """
-    Plots the results of registrations
-    """
-
-    def __init__(self, fixed_plot, moving_plot):
-        """
-        :params fixed_plot: the fixed image subplot
-        :params moving_plot: the moving image subplot
-        """
-
-        self.fixed_plot = fixed_plot
-        self.moving_plot = moving_plot
-
-        self.target_scatter = None
-        self.trans_target_plots = [None, None]
-        self.fixed_fids_plots = [None, None]
-        self.moving_fids_plot = None
-
-        self.stats_plot = PlotRegStatistics(fixed_plot)
-
-        self.show_actual_positions = True
-        self.target_point = None
-
-    def initialise_new_reg(self, img, target_point, outline):
-        """
-        resets the registration
-        """
-        self.moving_plot.imshow(img)
-        self.fixed_plot.plot(outline[:, 1], outline[:, 0], '-b', lw=3)
-        self.fixed_plot.set_ylim([0, img.shape[0]])
-        self.fixed_plot.set_xlim([0, img.shape[1]])
-        self.fixed_plot.axis([0, img.shape[1], img.shape[0], 0])
-        self.fixed_plot.axis('scaled')
-        self.target_point = target_point
-
-        if self.target_scatter is not None:
-            self.target_scatter.remove()
-
-        self.target_scatter = self.moving_plot.scatter(self.target_point[0, 0],
-                                                       self.target_point[0, 1],
-                                                       s=144, c='r')
-        if self.trans_target_plots[0] is not None:
-            self.trans_target_plots[0].remove()
-            self.trans_target_plots[0] = None
-
-        if self.trans_target_plots[1] is not None:
-            self.trans_target_plots[1].remove()
-            self.trans_target_plots[1] = None
-
-        self.stats_plot.update_stats_plot(0, 0, 0, 0)
-
-        self.moving_plot.set_title('Pre-Operative Image', y=-0.10,
-                                   fontsize=26)
-        self.fixed_plot.set_title('Patient in Theatre', y=-0.10,
-                                  fontsize=26)
-
-
-    def plot_fiducials(self, fixed_points, moving_points, no_fids, mean_fle):
-        """
-        Updates plot with fiducial data
-        """
-
-        if self.fixed_fids_plots[0] is not None:
-            self.fixed_fids_plots[0].remove()
-        if self.moving_fids_plot is not None:
-            self.moving_fids_plot.remove()
-
-        if self.fixed_fids_plots[1] is not None:
-            self.fixed_fids_plots[1].remove()
-
-
-        self.fixed_fids_plots[0] = self.fixed_plot.scatter(fixed_points[:, 0],
-                                                           fixed_points[:, 1],
-                                                           s=64, c='g',
-                                                           marker='o')
-        self.moving_fids_plot = self.moving_plot.scatter(moving_points[:, 0],
-                                                         moving_points[:, 1],
-                                                         s=64, c='g',
-                                                         marker="o")
-
-        if self.show_actual_positions:
-            self.fixed_fids_plots[1] = self.fixed_plot.scatter(
-                moving_points[:, 0],
-                moving_points[:, 1],
-                s=36, c='black',
-                marker='+')
-
-        self.stats_plot.update_fids_stats(no_fids, mean_fle)
-
-    def plot_registration_result(self, actual_tre, expected_tre,
-                                 fre, expected_fre, transformed_target_2d):
-        """
-        Plots the results of a registration
-        """
-
-        self.stats_plot.update_stats_plot(actual_tre, expected_tre,
-                                          fre, expected_fre)
-
-
-        if self.trans_target_plots[0] is not None:
-            self.trans_target_plots[0].remove()
-
-        if self.trans_target_plots[1] is not None:
-            self.trans_target_plots[1].remove()
-
-        self.trans_target_plots[0] = self.fixed_plot.scatter(
-            transformed_target_2d[0],
-            transformed_target_2d[1],
-            s=144, c='r', marker='o')
-
-        if self.show_actual_positions:
-            self.trans_target_plots[1] = self.fixed_plot.scatter(
-                self.target_point[0, 0],
-                self.target_point[0, 1],
-                s=36, c='black', marker='+')
-
 class AddFiducialMarker:
     """
     A class to handle mouse press events, adding a fiducial
@@ -266,7 +12,8 @@ class AddFiducialMarker:
     """
 
     def __init__(self, fig, plotter,
-                 pbr, logger, fixed_fle_sd, moving_fle_sd):
+                 pbr, logger, fixed_fle_sd, moving_fle_sd,
+                 max_fids=None):
         """
         :params fig: the matplot lib figure to get mouse events from
         :params fixed_plot: the fixed image subplot
@@ -279,13 +26,14 @@ class AddFiducialMarker:
         self.pbr = pbr
         self.plotter = plotter
         self.fig = fig
-        self.cid = fig.canvas.mpl_connect('button_press_event', self)
+        _ = fig.canvas.mpl_connect('button_press_event', self)
         self.logger = logger
         self.fixed_points = None
         self.moving_points = None
         self.fids_plot = None
         self.fixed_fle_sd = fixed_fle_sd
         self.moving_fle_sd = moving_fle_sd
+        self.max_fids = max_fids
 
         self.reset_fiducials(0.0)
 
@@ -294,6 +42,10 @@ class AddFiducialMarker:
             fiducial_location = np.zeros((1, 3), dtype=np.float64)
             fiducial_location[0, 0] = event.xdata
             fiducial_location[0, 1] = event.ydata
+
+            if self.max_fids is not None:
+                if self.fixed_points.shape[0] >= self.max_fids:
+                    return
 
             if _is_valid_fiducial(fiducial_location):
                 fixed_point = _add_guassian_fle_to_fiducial(
@@ -322,9 +74,10 @@ class AddFiducialMarker:
                     self.plotter.plot_registration_result(
                         actual_tre, expected_tre,
                         fre, expected_fre, transformed_target_2d)
-                    self.logger.log_result(
-                        actual_tre, fre, expected_tre, expected_fre, mean_fle,
-                        no_fids)
+                    if self.logger is not None:
+                        self.logger.log_result(
+                            actual_tre, fre, expected_tre, expected_fre,
+                            mean_fle, no_fids)
                 self.fig.canvas.draw()
 
     def reset_fiducials(self, mean_fle_sq):

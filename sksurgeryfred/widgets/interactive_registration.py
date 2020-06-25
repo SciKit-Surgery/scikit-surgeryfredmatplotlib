@@ -7,8 +7,10 @@ import skimage.io
 import numpy as np
 
 from sksurgeryfred.algorithms.fred import make_target_point, \
-                PlotRegistrations, \
-                PointBasedRegistration, AddFiducialMarker
+                AddFiducialMarker
+from sksurgeryfred.plotting.interactive_plots import PlotRegistrations, \
+                PlotRegStatistics
+from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.logging.fred_logger import Logger
@@ -27,7 +29,14 @@ class InteractiveRegistration:
 
         self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 10))
         self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
-        self.plotter = PlotRegistrations(self.subplot[1], self.subplot[0])
+        self.stats_plot = PlotRegStatistics(self.subplot[1])
+        self.stats_plot.set_visibilities(True, True, True, True, True,
+                                         False, False, False, False)
+
+        self.plotter = PlotRegistrations(self.subplot[1], self.subplot[0],
+                                         self.stats_plot)
+
+        self.plotter.show_actual_positions = True
 
         log_config = {"logger" : {
             "log file name" : "fred_results.log",
