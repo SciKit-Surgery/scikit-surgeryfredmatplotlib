@@ -10,22 +10,21 @@ class Ablator():
     """
     handles the simulated ablation for scikit-surgery fred
     """
-    def __init__(self):
+    def __init__(self, margin):
         """
         Initialise ablator with some empty member variables
         """
-        self.margin = None
+        self.margin = margin
         self.target = None
         self.est_target = None
         self.target_radius = None
         self.ready = False
         self.margin_increment = 0.1
 
-    def setup(self, margin, target, target_radius):
+    def setup(self, target, target_radius):
         """
         Setup target etc.
         """
-        self.margin = margin
         self.target = target
         self.target_radius = target_radius
         self.ready = True

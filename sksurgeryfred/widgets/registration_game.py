@@ -5,6 +5,7 @@ The main widget for the interactive registration part of scikit-surgeryFRED
 import matplotlib.pyplot as plt
 import skimage.io
 import numpy as np
+from random import shuffle
 
 from sksurgeryfred.algorithms.fred import make_target_point, \
                 AddFiducialMarker
@@ -33,9 +34,9 @@ class RegistrationGame:
         self.stats_plot = PlotRegStatistics(subplot[1])
         self.stats_plot.set_visibilities(True, True, False, False, False,
                                          True, True, True, True)
-
+        self.repeats = 20
+        self.visibilitySetter = VisibilitySettings(self.repeats - 4)
         self.total_score = 0
-        self.repeats = 0
         self.stats_plot.update_last_score(0)
         self.stats_plot.update_total_score(self.total_score)
 
@@ -53,7 +54,7 @@ class RegistrationGame:
         self.mouse_int = None
         self.pbr = None
         self.image_file_name = image_file_name
-        self.ablation = Ablator()
+        self.ablation = Ablator(margin = 1.0)
 
         self.intialise_registration()
 
@@ -87,21 +88,23 @@ class RegistrationGame:
                     self.stats_plot.update_last_score(score)
                     self.total_score += score
                     self.stats_plot.update_total_score(self.total_score)
-                    if self.repeats < 20:
-                        self.intialise_registration()
-                        if self.repeats > 4:
-                            self.set_visibilities()
-                        self.repeats += 1
+                    if self.repeats > 0:
+                        if self.repeats < 17:
+                            [ fids_text, tre_text, exp_tre_text, exp_fre_text,
+                            fre_text, score_text, total_score_text, 
+                            margin_text, repeats_text ] = \
+                                self.visibilitySetter.get_vis_state()
+                            self.stats_plot.set_visibilities(
+                                fids_text, tre_text, exp_tre_text, exp_fre_text,
+                                fre_text, score_text, total_score_text, 
+                                margin_text, repeats_text)
+                        self.repeats -= 1
                         self.stats_plot.update_repeats(self.repeats)
+                        self.intialise_registration()
                     else:
                         print("Game Over")
                     self.fig.canvas.draw()
 
-    def set_visibilities(self):
-        """
-        Some thing to set visibilities
-        """
-        return
 
     def intialise_registration(self):
         """
@@ -133,10 +136,10 @@ class RegistrationGame:
 
         self.mouse_int.reset_fiducials(fixed_fle_eavs)
 
-        self.ablation.setup(margin=1.0, target=target_point,
+        self.ablation.setup(target=target_point,
                             target_radius=10.0)
 
-        self.stats_plot.update_margin_stats(1.0)
+        self.stats_plot.update_margin_stats(self.ablation.margin)
         self.stats_plot.update_repeats(self.repeats)
 
         self.fig.canvas.draw()
@@ -150,5 +153,38 @@ class VisibilitySettings:
     Expected TRE
     Actual FRE
     """
-    def __init__(buffer_size):
-        state0=[True, True, False, False, False, True, True, True, True]
+    def __init__(self, buffer_size):
+        """
+        :params buffer_size: the number of repeats you want, should be a
+            product of 4
+        """
+        if buffer_size % 4 != 0:
+            raise ValueError("Buffer size must be divisible by 4")
+
+        each_bin = int(buffer_size / 4)
+
+        fle_and_fids=[True, False, False, False, False, True, True, True, True]
+        exp_tre     =[False, False, True, False, False, True, True, True, True]
+        exp_fre     =[False, False, False, True, False, True, True, True, True]
+        actual_fre  =[False, False, False, False, True, True, True, True, True]
+
+        self.state_list = []
+
+        for _ in range (each_bin):
+            self.state_list.append(fle_and_fids)
+            self.state_list.append(exp_tre)
+            self.state_list.append(exp_fre)
+            self.state_list.append(actual_fre)
+
+    def get_vis_state(self):
+        """
+        returns a random visibility state
+        """
+        shuffle(self.state_list)
+        try:
+            return self.state_list.pop()
+        except IndexError:
+            raise IndexError("You tried to get a value from" +
+                             "VisibilitySettings, but the buffer is emptied.")
+
+

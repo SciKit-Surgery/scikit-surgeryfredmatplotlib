@@ -38,12 +38,16 @@ class PlotRegStatistics():
 
         self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
 
-    def set_visibilities(self, fids_text, tre_text, exp_tre_text, exp_fre_text,
-                         fre_text, score_text, total_score_text, margin_text,
-                         repeats_text):
+    def set_visibilities(self, 
+                         fids_text, tre_text, exp_tre_text, exp_fre_text,
+                         fre_text, 
+                         score_text, total_score_text, margin_text, repeats_text):
         """
         Sets which text boxes will be visible
         """
+        print(fids_text)
+        print(tre_text)
+        print(exp_tre_text)
         self.visibilities = {
             'fids_text' : fids_text,
             'tre_text' : tre_text,
@@ -62,11 +66,20 @@ class PlotRegStatistics():
         Updates the statistics display
         """
         if self.texts.get('tre_text') is not None:
-            self.texts.get('tre_text').remove()
+            try:
+                self.texts.get('tre_text').remove()
+            except ValueError:
+                pass
         if self.texts.get('exp_tre_text') is not None:
-            self.texts.get('exp_tre_text').remove()
+            try:
+                self.texts.get('exp_tre_text').remove()
+            except ValueError:
+                pass
         if self.texts.get('fre_text') is not None:
-            self.texts.get('fre_text').remove()
+            try:
+                self.texts.get('fre_text').remove()
+            except ValueError:
+                pass
 
         exp_tre_str = ('Expected TRE = {0:.2f}'.format(exp_tre))
         exp_fre_str = ('Expected FRE = {0:.2f}\n'.format(exp_fre))
@@ -75,7 +88,7 @@ class PlotRegStatistics():
         if self.visibilities.get('exp_fre_text'):
             stats_str += exp_fre_str
 
-        if self.visibilities.get('exp_fre_text'):
+        if self.visibilities.get('exp_tre_text'):
             stats_str += exp_tre_str
 
         actual_tre_str = ('Actual TRE = {0:.2f}'.format(tre))
@@ -104,7 +117,10 @@ class PlotRegStatistics():
         Updates the fids stats display
         """
         if self.texts.get('fids_text') is not None:
-            self.texts.get('fids_text').remove()
+            try:
+                self.texts.get('fids_text').remove()
+            except ValueError:
+                pass
 
         fids_str = ('Number of fids = {0:}\n'.format(no_fids) +
                     'Expected FLE = {0:.2f}'.format(mean_fle))
