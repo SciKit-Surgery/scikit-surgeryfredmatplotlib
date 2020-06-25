@@ -30,7 +30,7 @@ class InteractiveRegistration:
         self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 10))
         self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
         self.stats_plot = PlotRegStatistics(self.subplot[1])
-        self.stats_plot.set_visibilities(True, True, True, True,
+        self.stats_plot.set_visibilities(True, True, True, True, True,
                                          False, False, False)
 
         self.plotter = PlotRegistrations(self.subplot[1], self.subplot[0],

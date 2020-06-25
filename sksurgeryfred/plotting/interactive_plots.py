@@ -16,6 +16,7 @@ class PlotRegStatistics():
             'fids_text' : None,
             'tre_text' : None,
             'exp_tre_text' : None,
+            'exp_fre_text' : None,
             'fre_text' : None,
             'score_text' : None,
             'total_score_text' : None,
@@ -26,6 +27,7 @@ class PlotRegStatistics():
             'fids_text' : False,
             'tre_text' : False,
             'exp_tre_text' : False,
+            'exp_fre_text' : False,
             'fre_text' : False,
             'score_text' : False,
             'total_score_text' : False,
@@ -34,8 +36,8 @@ class PlotRegStatistics():
 
         self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
 
-    def set_visibilities(self, fids_text, tre_text, exp_tre_text, fre_text,
-                         score_text, total_score_text, margin_text):
+    def set_visibilities(self, fids_text, tre_text, exp_tre_text, exp_fre_text,
+                         fre_text, score_text, total_score_text, margin_text):
         """
         Sets which text boxes will be visible
         """
@@ -43,6 +45,7 @@ class PlotRegStatistics():
             'fids_text' : fids_text,
             'tre_text' : tre_text,
             'exp_tre_text' : exp_tre_text,
+            'exp_fre_text' : exp_fre_text,
             'fre_text' : fre_text,
             'score_text' : score_text,
             'total_score_text' : total_score_text,
@@ -61,13 +64,21 @@ class PlotRegStatistics():
         if self.texts.get('fre_text') is not None:
             self.texts.get('fre_text').remove()
 
-        stats_str = ('Expected FRE = {0:.2f}\n'.format(exp_fre) +
-                     'Expected TRE = {0:.2f}'.format(exp_tre))
+        exp_tre_str = ('Expected TRE = {0:.2f}'.format(exp_tre))
+        exp_fre_str = ('Expected FRE = {0:.2f}\n'.format(exp_fre))
+        stats_str = ''
+
+        if self.visibilities.get('exp_fre_text'):
+            stats_str += exp_fre_str
+
+        if self.visibilities.get('exp_fre_text'):
+            stats_str += exp_tre_str
 
         actual_tre_str = ('Actual TRE = {0:.2f}'.format(tre))
         actual_fre_str = ('Actual FRE = {0:.2f}'.format(fre))
 
-        if self.visibilities.get('exp_tre_text'):
+        if (self.visibilities.get('exp_tre_text') or
+                self.visibilities.get('exp_fre_text')):
             self.texts['exp_tre_text'] = self.plot.text(
                 -0.90, 1.10, stats_str, transform=self.plot.transAxes,
                 fontsize=26, verticalalignment='top', bbox=self.props)
