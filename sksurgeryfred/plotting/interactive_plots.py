@@ -45,9 +45,6 @@ class PlotRegStatistics():
         """
         Sets which text boxes will be visible
         """
-        print(fids_text)
-        print(tre_text)
-        print(exp_tre_text)
         self.visibilities = {
             'fids_text' : fids_text,
             'tre_text' : tre_text,

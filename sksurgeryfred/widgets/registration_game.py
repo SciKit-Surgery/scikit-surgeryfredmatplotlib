@@ -100,9 +100,21 @@ class RegistrationGame:
                         self.stats_plot.update_repeats(self.repeats)
                         self.intialise_registration()
                     else:
-                        print("Game Over")
+                        self._game_over()
                     self.fig.canvas.draw()
 
+    def _game_over(self):
+        props = dict(boxstyle='round', facecolor='wheat', alpha=1.0)
+        self.fig.text(0.2, 0.7, "Game Over",
+                      fontsize=56, bbox=props)
+        
+        text_str = ("Thanks for playing.\n" +
+                    "Please let me know your scores by sending the log file\n" +
+                    "'fred_game.log' and any comments to s.thompson@ucl.ac.uk")
+        self.fig.text(0.2, 0.4, text_str,
+                      fontsize=26, bbox=props)
+
+        self.fig.canvas.draw()
 
     def intialise_registration(self):
         """
