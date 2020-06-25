@@ -15,7 +15,7 @@ from sksurgeryfred.algorithms.fit_contour import find_outer_contour
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 from sksurgeryfred.algorithms.ablation import Ablator
 from sksurgeryfred.logging.fred_logger import Logger
-
+ 
 class RegistrationGame:
     """
     an interactive window for doing live registration
@@ -31,8 +31,8 @@ class RegistrationGame:
         self.fig, subplot = plt.subplots(1, 2, figsize=(20, 10))
         self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
         self.stats_plot = PlotRegStatistics(subplot[1])
-        self.stats_plot.set_visibilities(True, True, False, False,
-                                         True, True, True)
+        self.stats_plot.set_visibilities(True, True, False, False, False,
+                                         True, True, True, True)
 
         self.total_score = 0
         self.repeats = 0
@@ -87,14 +87,15 @@ class RegistrationGame:
                     self.stats_plot.update_last_score(score)
                     self.total_score += score
                     self.stats_plot.update_total_score(self.total_score)
-                    self.fig.canvas.draw()
                     if self.repeats < 20:
                         self.intialise_registration()
                         if self.repeats > 4:
                             self.set_visibilities()
                         self.repeats += 1
+                        self.stats_plot.update_repeats(self.repeats)
                     else:
                         print("Game Over")
+                    self.fig.canvas.draw()
 
     def set_visibilities(self):
         """
@@ -136,5 +137,18 @@ class RegistrationGame:
                             target_radius=10.0)
 
         self.stats_plot.update_margin_stats(1.0)
+        self.stats_plot.update_repeats(self.repeats)
 
         self.fig.canvas.draw()
+
+
+class VisibilitySettings:
+    """
+    randomly selects from list of visilities, has five states
+    FLE and no fids
+    Expected FRE
+    Expected TRE
+    Actual FRE
+    """
+    def __init__(buffer_size):
+        state0=[True, True, False, False, False, True, True, True, True]

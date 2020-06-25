@@ -20,7 +20,8 @@ class PlotRegStatistics():
             'fre_text' : None,
             'score_text' : None,
             'total_score_text' : None,
-            'margin_text' : None
+            'margin_text' : None,
+            'repeats_text' : None
             }
 
         self.visibilities = {
@@ -31,13 +32,15 @@ class PlotRegStatistics():
             'fre_text' : False,
             'score_text' : False,
             'total_score_text' : False,
-            'margin_text' : False
+            'margin_text' : False,
+            'repeats_text' : False
             }
 
         self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
 
     def set_visibilities(self, fids_text, tre_text, exp_tre_text, exp_fre_text,
-                         fre_text, score_text, total_score_text, margin_text):
+                         fre_text, score_text, total_score_text, margin_text,
+                         repeats_text):
         """
         Sets which text boxes will be visible
         """
@@ -49,7 +52,8 @@ class PlotRegStatistics():
             'fre_text' : fre_text,
             'score_text' : score_text,
             'total_score_text' : total_score_text,
-            'margin_text' : margin_text
+            'margin_text' : margin_text,
+            'repeats_text' : repeats_text
             }
 
 
@@ -139,7 +143,7 @@ class PlotRegStatistics():
 
     def update_total_score(self, total_score):
         """
-        Updates the margin text box
+        Updates the total score text box
         """
         if self.texts.get('total_score_text') is not None:
             self.texts.get('total_score_text').remove()
@@ -149,6 +153,20 @@ class PlotRegStatistics():
         if self.visibilities.get('total_score_text'):
             self.texts['total_score_text'] = self.plot.text(
                 1.05, 0.9, fids_str, transform=self.plot.transAxes,
+                fontsize=26, verticalalignment='top', bbox=self.props)
+
+    def update_repeats(self, repeats):
+        """
+        Updates the total score text box
+        """
+        if self.texts.get('repeats_text') is not None:
+            self.texts.get('repeats_text').remove()
+
+        fids_str = ('Reps:{0:}'.format(repeats))
+
+        if self.visibilities.get('repeats_text'):
+            self.texts['repeats_text'] = self.plot.text(
+                1.05, 0.3, fids_str, transform=self.plot.transAxes,
                 fontsize=26, verticalalignment='top', bbox=self.props)
 
 
