@@ -38,10 +38,11 @@ class PlotRegStatistics():
 
         self.props = dict(boxstyle='round', facecolor='wheat', alpha=0.8)
 
-    def set_visibilities(self, 
+    def set_visibilities(self,
                          fids_text, tre_text, exp_tre_text, exp_fre_text,
-                         fre_text, 
-                         score_text, total_score_text, margin_text, repeats_text):
+                         fre_text,
+                         score_text, total_score_text, margin_text,
+                         repeats_text):
         """
         Sets which text boxes will be visible
         """
