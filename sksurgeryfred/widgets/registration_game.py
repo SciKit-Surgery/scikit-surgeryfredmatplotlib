@@ -34,6 +34,7 @@ class RegistrationGame:
         self.stats_plot = PlotRegStatistics(subplot[1])
         self.stats_plot.set_visibilities(True, True, False, False, False,
                                          True, True, True, True)
+        self.state_string = 'Actual TRE'
         self.repeats = 20
         self.visibility_setter = VisibilitySettings(self.repeats - 4)
         self.total_score = 0
@@ -46,7 +47,7 @@ class RegistrationGame:
         self.plotter.show_actual_positions = False
 
         log_config = {"logger" : {
-            "log file name" : "fred_results.log",
+            "log file name" : "fred_game.log",
             "overwrite existing" : False
             }}
 
@@ -86,11 +87,12 @@ class RegistrationGame:
                     self.stats_plot.update_last_score(score)
                     self.total_score += score
                     self.stats_plot.update_total_score(self.total_score)
+                    self.logger.log_score(self.state_string, score)
                     if self.repeats > 1:
                         if self.repeats < 18:
                             [fids_text, tre_text, exp_tre_text, exp_fre_text,
                              fre_text, score_text, total_score_text,
-                             margin_text, repeats_text] = \
+                             margin_text, repeats_text, self.state_string] = \
                                  self.visibility_setter.get_vis_state()
                             self.stats_plot.set_visibilities(
                                 fids_text, tre_text, exp_tre_text, exp_fre_text,
@@ -141,7 +143,7 @@ class RegistrationGame:
 
         if self.mouse_int is None:
             self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
-                                               self.pbr, self.logger,
+                                               self.pbr, None,
                                                fixed_fle, moving_fle,
                                                max_fids=6)
 
@@ -175,10 +177,13 @@ class VisibilitySettings:
         each_bin = int(buffer_size / 4)
 
         fle_and_fids = [True, False, False, False, False,
-                        True, True, True, True]
-        exp_tre = [False, False, True, False, False, True, True, True, True]
-        exp_fre = [False, False, False, True, False, True, True, True, True]
-        actual_fre = [False, False, False, False, True, True, True, True, True]
+                        True, True, True, True, 'FLE and Number of Fids']
+        exp_tre = [False, False, True, False, False, True, True, True, True,
+                   'Expected TRE']
+        exp_fre = [False, False, False, True, False, True, True, True, True,
+                   'Expected FRE']
+        actual_fre = [False, False, False, False, True, True, True, True, True,
+                      'Actual FRE']
 
         self.state_list = []
 

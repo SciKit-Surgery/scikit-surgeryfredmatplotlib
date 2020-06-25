@@ -63,6 +63,14 @@ class Logger():
                    no_fids)
         self._logger.info(msg)
 
+    def log_score(self, state_string, score):
+        """
+        Writes the registration result to log file
+        """
+        msg = ("ablation, {0:}, {1:}").format(state_string, score)
+        self._logger.info(msg)
+
+
 
     def read_log(self):
         """

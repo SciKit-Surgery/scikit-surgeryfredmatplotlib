@@ -74,9 +74,10 @@ class AddFiducialMarker:
                     self.plotter.plot_registration_result(
                         actual_tre, expected_tre,
                         fre, expected_fre, transformed_target_2d)
-                    self.logger.log_result(
-                        actual_tre, fre, expected_tre, expected_fre, mean_fle,
-                        no_fids)
+                    if self.logger is not None:
+                            self.logger.log_result(
+                            actual_tre, fre, expected_tre, expected_fre, mean_fle,
+                            no_fids)
                 self.fig.canvas.draw()
 
     def reset_fiducials(self, mean_fle_sq):
