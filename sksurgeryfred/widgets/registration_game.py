@@ -67,8 +67,6 @@ class RegistrationGame:
         """
         handle a key press event
         """
-        if event.key == 'r':
-            self.intialise_registration()
 
         if event.key == "up":
             margin = self.ablation.increase_margin()
@@ -88,8 +86,8 @@ class RegistrationGame:
                     self.stats_plot.update_last_score(score)
                     self.total_score += score
                     self.stats_plot.update_total_score(self.total_score)
-                    if self.repeats > 0:
-                        if self.repeats < 17:
+                    if self.repeats > 1:
+                        if self.repeats < 18:
                             [ fids_text, tre_text, exp_tre_text, exp_fre_text,
                             fre_text, score_text, total_score_text, 
                             margin_text, repeats_text ] = \
@@ -132,7 +130,8 @@ class RegistrationGame:
         if self.mouse_int is None:
             self.mouse_int = AddFiducialMarker(self.fig, self.plotter,
                                                self.pbr, self.logger,
-                                               fixed_fle, moving_fle)
+                                               fixed_fle, moving_fle, 
+                                               max_fids = 6)
 
         self.mouse_int.reset_fiducials(fixed_fle_eavs)
 

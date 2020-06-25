@@ -12,7 +12,8 @@ class AddFiducialMarker:
     """
 
     def __init__(self, fig, plotter,
-                 pbr, logger, fixed_fle_sd, moving_fle_sd):
+                 pbr, logger, fixed_fle_sd, moving_fle_sd,
+                 max_fids = None):
         """
         :params fig: the matplot lib figure to get mouse events from
         :params fixed_plot: the fixed image subplot
@@ -32,6 +33,7 @@ class AddFiducialMarker:
         self.fids_plot = None
         self.fixed_fle_sd = fixed_fle_sd
         self.moving_fle_sd = moving_fle_sd
+        self.max_fids = max_fids
 
         self.reset_fiducials(0.0)
 
@@ -40,6 +42,10 @@ class AddFiducialMarker:
             fiducial_location = np.zeros((1, 3), dtype=np.float64)
             fiducial_location[0, 0] = event.xdata
             fiducial_location[0, 1] = event.ydata
+            
+            if self.max_fids is not None:
+                    if self.fixed_points.shape[0] >= self.max_fids:
+                         return
 
             if _is_valid_fiducial(fiducial_location):
                 fixed_point = _add_guassian_fle_to_fiducial(
