@@ -84,7 +84,7 @@ You can pip install directly from the repository as follows:
 
 ::
 
-    pip install git+https://github.com/UCL/FiducialRegistrationEducationalDemonstration
+    pip install git+https://github.com/UCL/scikit-surgeryfred
 
 
 
