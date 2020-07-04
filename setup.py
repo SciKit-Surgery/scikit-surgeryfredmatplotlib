@@ -62,8 +62,8 @@ setup(
     entry_points={
         'console_scripts': [
             'sksurgeryfred=sksurgeryfred.__main__:main',
-            'sksurgeryfred_plotter=sksurgeryfred.ui.ui.sksurgeryfred_plotter_command_line:main',
-            'sksurgeryfred_game=sksurgeryfred.ui.ui.sksurgeryfred_game_command_line:main',
+            'sksurgeryfred_plotter=sksurgeryfred.ui.sksurgeryfred_plotter_command_line:main',
+            'sksurgeryfred_game=sksurgeryfred.ui.sksurgeryfred_game_command_line:main',
         ],
     },
 )
