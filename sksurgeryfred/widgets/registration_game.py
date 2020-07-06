@@ -4,6 +4,7 @@ The main widget for the interactive registration part of scikit-surgeryFRED
 
 from random import shuffle
 import matplotlib.pyplot as plt
+from matplotlib import use
 import skimage.io
 import numpy as np
 
@@ -28,7 +29,7 @@ class RegistrationGame:
         detected screen points, which you can click on
         to measure distances
         """
-
+        use('TkAgg')
         self.fig, subplot = plt.subplots(1, 2, figsize=(20, 10))
         self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
         self.stats_plot = PlotRegStatistics(subplot[1])
