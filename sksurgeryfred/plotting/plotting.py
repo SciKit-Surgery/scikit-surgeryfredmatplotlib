@@ -2,6 +2,7 @@
 """
 
 import matplotlib.pyplot as plt
+from matplotlib import use
 from numpy import polyfit, corrcoef, array
 
 from sksurgeryfred.logging.fred_logger import Logger
@@ -32,6 +33,7 @@ def plot_results(logfile):
     [actual_tres, actual_fres, expected_tres, expected_fres,
      mean_fles, no_fids] = logger.read_log()
 
+    use('TkAgg')
     fig, subplot = plt.subplots(1, 5, figsize=(18, 8))
 
     fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D. Correlation Plots')
