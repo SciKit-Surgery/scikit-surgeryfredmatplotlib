@@ -5,6 +5,8 @@ calibration and tracking
 import math
 import numpy as np
 
+from sksurgeryfred.algorithms.fle import add_guassian_fle_to_fiducial
+
 class AddFiducialMarker:
     """
     A class to handle mouse press events, adding a fiducial
@@ -48,9 +50,9 @@ class AddFiducialMarker:
                     return
 
             if _is_valid_fiducial(fiducial_location):
-                fixed_point = _add_guassian_fle_to_fiducial(
+                fixed_point = add_guassian_fle_to_fiducial(
                     fiducial_location, self.fixed_fle_sd)
-                moving_point = _add_guassian_fle_to_fiducial(
+                moving_point = add_guassian_fle_to_fiducial(
                     fiducial_location, self.moving_fle_sd)
                 self.fixed_points = np.concatenate(
                     (self.fixed_points, fixed_point), axis=0)
@@ -97,11 +99,6 @@ def _is_valid_fiducial(_unused_fiducial_location):
     :returns: true if a valid fiducial
     """
     return True
-
-def _add_guassian_fle_to_fiducial(fiducial, fle_standard_deviation):
-
-    moved = np.random.normal(fiducial, fle_standard_deviation)
-    return moved
 
 def make_target_point(outline, edge_buffer=0.9):
     """
