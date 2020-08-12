@@ -19,10 +19,21 @@ Fiducial Registration Educational Demonstration
     :target: http://scikit-surgeryfred.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://zenodo.org/badge/269602581.svg
-    :target: https://zenodo.org/badge/latestdoi/269602581
-    :alt: DOI - Zenodo
+.. image:: https://img.shields.io/badge/Cite-SciKit--Surgery-informational
+   :target: https://doi.org/10.1007/s11548-020-02180-5
+   :alt: The SciKit-Surgery paper
 
+.. image:: https://zenodo.org/badge/269602581.svg
+   :target: https://zenodo.org/badge/latestdoi/269602581
+   :alt: DOI - Zenodo
+
+.. image:: https://img.shields.io/badge/Video-Registration-blueviolet
+   :target: https://www.youtube.com/watch?v=t_6CH5uroYo
+   :alt: Video Demonstration on YouTube
+
+.. image:: https://img.shields.io/badge/Video-Game-blueviolet
+   :target: https://www.youtube.com/watch?v=ansH1w2ST-g
+   :alt: Video Demonstration of Game on YouTube
 
 Author: Stephen Thompson
 
