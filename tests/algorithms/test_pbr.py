@@ -180,7 +180,7 @@ def test_pbr_20_fids_offset_target():
     fresq_sum = 0
     expected_tre_squared = 0
     expected_fre = 0
-    repeats = 400
+    repeats = 200
     for _ in range(repeats):
         fixed_fids, moving_fids = _make_circle_fiducials(20, centre, radius,
                                                          fixed_fle_std_dev,
