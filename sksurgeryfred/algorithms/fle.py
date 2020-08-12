@@ -28,13 +28,15 @@ class FLE:
     Provides methods to add Fiducial Localisation Error to a point
 
     :params independent_fle: the magnitude(s) of the independent FLE's,
-        passed to the ind_fle_function, defaults to zero. A single float
+        used for the default ind_fle_function. Do not use if using
+        your own ind_fle_function. A single float
         will yield isotropic error, or an array can be passed for
         anisotropic errors.
     :params ind_fle_function: the function to use for sampling the independent
         fle. Defaults to numpy.random.normal
     :params systematic_fle: the magnitude(s) of the systematic FLE's,
-        passed to the sys_fle_function, defaults to zero. A single float
+        used for the default sys_fle_function. Do not use if using
+        your own sys_fle_function. A single float
         will yield isotropic error, or an array can be passed for
         anisotropic errors.
     :params sys_fle_function: the function to use for sampling the independent
@@ -43,32 +45,60 @@ class FLE:
 
     :raises ValueError: If independent_fle is not single value or array of
         length dimension.
+    :raises ValueError: If both fle function and fle value are set.
     :raises TypeError: If either error function is invalid.
-
 
     """
 
-    def __init__(self, independent_fle=0.0, ind_fle_function=np.random.normal,
-                 systematic_fle=0.0, sys_fle_function=np.add, dimension=3):
+    def __init__(self, independent_fle=None, ind_fle_function=None,
+                 systematic_fle=None, sys_fle_function=None, dimension=3):
 
-        self.ind_fle = _set_fle(independent_fle, dimension)
+        if ind_fle_function is None:
+            if independent_fle is None:
+                independent_fle = 0.0
+            ind_fle = _set_fle(independent_fle, dimension)
+            def ind_fle_function():
+                return np.random.normal(loc=0.0, scale=ind_fle, size=dimension)
+        else:
+            if independent_fle is not None:
+                raise ValueError("Set independent_fle and ind_fle_function, ",
+                                 "independent_fle will be ignored")
         self.ind_fle_function = ind_fle_function
 
         try:
-            self.ind_fle_function(self.ind_fle, self.ind_fle)
+            self.ind_fle_function()
         except TypeError:
             raise TypeError("Failed to run function, ", ind_fle_function,
                             "check function")
 
-        self.sys_fle = _set_fle(systematic_fle, dimension)
-
+        if sys_fle_function is None:
+            if systematic_fle is None:
+                systematic_fle = 0.0
+            sys_fle = _set_fle(systematic_fle, dimension)
+            def sys_fle_function():
+                return sys_fle
+        else:
+            if systematic_fle is not None:
+                raise ValueError("Set systematic_fle and sys_fle_function, ",
+                                 "systematic_fle will be ignored")
         self.sys_fle_function = sys_fle_function
 
         try:
-            self.sys_fle_function(self.sys_fle, self.sys_fle)
+            self.sys_fle_function()
         except TypeError:
             raise TypeError("Failed to run function, ", sys_fle_function,
                             "check function")
+
+    def perturb_fiducial(self, fiducial_marker):
+        """
+        Adds the FLE to the marker position
+
+        :params fiducial_marker: the true position of the marker.
+        :returns: The perturbed position of the marker
+        """
+        return fiducial_marker + self.sys_fle_function() + \
+                        self.ind_fle_function()
+
 
 
 def add_guassian_fle_to_fiducial(fiducial, fle_standard_deviation):
