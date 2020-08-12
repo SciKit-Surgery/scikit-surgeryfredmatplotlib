@@ -16,6 +16,7 @@ def _set_fle(fle, dims):
             if fle.size != dims:
                 raise ValueError("FLE value must be single value or array",
                                  " of length ", dims)
+            return fle
     else:
         fle_array = np.full(dims, fle, dtype=np.float64)
 
@@ -42,7 +43,7 @@ class FLE:
 
     :raises ValueError: If independent_fle is not single value or array of
         length dimension.
-    :raises AttributeError: If either error function is invalid.
+    :raises TypeError: If either error function is invalid.
 
 
     """
@@ -55,9 +56,9 @@ class FLE:
 
         try:
             self.ind_fle_function(self.ind_fle, self.ind_fle)
-        except AttributeError:
-            raise AttributeError("Failed to run function, ", ind_fle_function,
-                                 "check name")
+        except TypeError:
+            raise TypeError("Failed to run function, ", ind_fle_function,
+                            "check function")
 
         self.sys_fle = _set_fle(systematic_fle, dimension)
 
@@ -65,9 +66,9 @@ class FLE:
 
         try:
             self.sys_fle_function(self.sys_fle, self.sys_fle)
-        except AttributeError:
-            raise AttributeError("Failed to run function, ", sys_fle_function,
-                                 "check name")
+        except TypeError:
+            raise TypeError("Failed to run function, ", sys_fle_function,
+                            "check function")
 
 
 def add_guassian_fle_to_fiducial(fiducial, fle_standard_deviation):

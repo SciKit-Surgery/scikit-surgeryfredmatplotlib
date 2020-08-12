@@ -7,7 +7,6 @@ import numpy as np
 from sksurgeryfred.algorithms.errors import expected_absolute_value
 import sksurgeryfred.algorithms.point_based_reg as pbreg
 
-np.random.seed(0)
 
 def _make_circle_fiducials(no_fids, centre, radius,
                            fixed_stddevs, moving_stddevs):
@@ -55,6 +54,7 @@ def test_pbr_3_fids():
     expected_tre_squared = 0
     expected_fre = 0
     repeats = 100
+    np.random.seed(0)
     for _ in range(repeats):
         fixed_fids, moving_fids = _make_circle_fiducials(3, centre, radius,
                                                          fixed_fle_std_dev,
@@ -96,7 +96,8 @@ def test_pbr_10_fids():
     fresq_sum = 0
     expected_tre_squared = 0
     expected_fre = 0
-    repeats = 300
+    repeats = 200
+    np.random.seed(0)
     for _ in range(repeats):
         fixed_fids, moving_fids = _make_circle_fiducials(10, centre, radius,
                                                          fixed_fle_std_dev,
@@ -139,6 +140,7 @@ def test_pbr_10_fids_offset_target():
     expected_tre_squared = 0
     expected_fre = 0
     repeats = 200
+    np.random.seed(0)
     for _ in range(repeats):
         fixed_fids, moving_fids = _make_circle_fiducials(10, centre, radius,
                                                          fixed_fle_std_dev,
@@ -181,6 +183,7 @@ def test_pbr_20_fids_offset_target():
     expected_tre_squared = 0
     expected_fre = 0
     repeats = 200
+    np.random.seed(0)
     for _ in range(repeats):
         fixed_fids, moving_fids = _make_circle_fiducials(20, centre, radius,
                                                          fixed_fle_std_dev,
