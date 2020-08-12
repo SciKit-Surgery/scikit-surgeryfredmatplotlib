@@ -27,21 +27,21 @@ class FLE:
     """
     Provides methods to add Fiducial Localisation Error to a point
 
-    :params independent_fle: the magnitude(s) of the independent FLE's,
+    :param independent_fle: the magnitude(s) of the independent FLE's,
         used for the default ind_fle_function. Do not use if using
         your own ind_fle_function. A single float
         will yield isotropic error, or an array can be passed for
         anisotropic errors.
-    :params ind_fle_function: the function to use for sampling the independent
+    :param ind_fle_function: the function to use for sampling the independent
         fle. Defaults to numpy.random.normal
-    :params systematic_fle: the magnitude(s) of the systematic FLE's,
+    :param systematic_fle: the magnitude(s) of the systematic FLE's,
         used for the default sys_fle_function. Do not use if using
         your own sys_fle_function. A single float
         will yield isotropic error, or an array can be passed for
         anisotropic errors.
-    :params sys_fle_function: the function to use for sampling the independent
+    :param sys_fle_function: the function to use for sampling the independent
         fle. Defaults to numpy.add
-    :params dimension: the dimensions to use, defaults to 3.
+    :param dimension: the dimensions to use, defaults to 3.
 
     :raises ValueError: If independent_fle is not single value or array of
         length dimension.
@@ -93,7 +93,7 @@ class FLE:
         """
         Adds the FLE to the marker position
 
-        :params fiducial_marker: the true position of the marker.
+        :param fiducial_marker: the true position of the marker.
         :returns: The perturbed position of the marker
         """
         return fiducial_marker + self.sys_fle_function() + \
