@@ -98,12 +98,3 @@ class FLE:
         """
         return fiducial_marker + self.sys_fle_function() + \
                         self.ind_fle_function()
-
-
-
-def add_guassian_fle_to_fiducial(fiducial, fle_standard_deviation):
-    """Not in use"""
-    #moved = np.random.normal(fiducial, fle_standard_deviation)
-    uni_error = np.random.uniform(-fle_standard_deviation,
-                                  fle_standard_deviation, (1, 3))
-    return fiducial + uni_error

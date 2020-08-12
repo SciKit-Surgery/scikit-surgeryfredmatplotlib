@@ -5,7 +5,7 @@ calibration and tracking
 import math
 import numpy as np
 
-from sksurgeryfred.algorithms.fle import add_guassian_fle_to_fiducial
+from sksurgeryfred.algorithms.fle import FLE
 
 class AddFiducialMarker:
     """
@@ -33,31 +33,30 @@ class AddFiducialMarker:
         self.fixed_points = None
         self.moving_points = None
         self.fids_plot = None
-        self.fixed_fle_sd = fixed_fle_sd
-        self.moving_fle_sd = moving_fle_sd
+        self.fixed_fle = FLE(independent_fle=fixed_fle_sd.reshape(3))
+        self.moving_fle = FLE(independent_fle=moving_fle_sd.reshape(3))
         self.max_fids = max_fids
 
         self.reset_fiducials(0.0)
 
     def __call__(self, event):
         if event.xdata is not None:
-            fiducial_location = np.zeros((1, 3), dtype=np.float64)
-            fiducial_location[0, 0] = event.xdata
-            fiducial_location[0, 1] = event.ydata
+            fiducial_location = np.zeros((3), dtype=np.float64)
+            fiducial_location[0] = event.xdata
+            fiducial_location[1] = event.ydata
 
             if self.max_fids is not None:
                 if self.fixed_points.shape[0] >= self.max_fids:
                     return
 
             if _is_valid_fiducial(fiducial_location):
-                fixed_point = add_guassian_fle_to_fiducial(
-                    fiducial_location, self.fixed_fle_sd)
-                moving_point = add_guassian_fle_to_fiducial(
-                    fiducial_location, self.moving_fle_sd)
+                fixed_point = self.fixed_fle.perturb_fiducial(fiducial_location)
+                moving_point = self.moving_fle.perturb_fiducial(
+                    fiducial_location)
                 self.fixed_points = np.concatenate(
-                    (self.fixed_points, fixed_point), axis=0)
+                    (self.fixed_points, fixed_point.reshape(1, 3)), axis=0)
                 self.moving_points = np.concatenate(
-                    (self.moving_points, moving_point), axis=0)
+                    (self.moving_points, moving_point.reshape(1, 3)), axis=0)
 
                 [success, fre, mean_fle_sq, expected_tre_sq,
                  expected_fre_sq, transformed_target_2d,
