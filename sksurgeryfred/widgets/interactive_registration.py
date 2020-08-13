@@ -30,7 +30,7 @@ class InteractiveRegistration:
         if not headless:
             use('TkAgg')
         else:
-            plt.ioff()
+            use('agg')
         self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 10))
         self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
         self.stats_plot = PlotRegStatistics(self.subplot[1])
