@@ -21,13 +21,17 @@ class InteractiveRegistration:
     an interactive window for doing live registration
     """
 
-    def __init__(self, image_file_name):
+    def __init__(self, image_file_name, headless=False):
         """
         Creates a visualisation of the projected and
         detected screen points, which you can click on
         to measure distances
         """
-        use('TkAgg')
+        if not headless:
+            use('TkAgg')
+                #plt.ioff()
+         #   pass
+        #else:
         self.fig, self.subplot = plt.subplots(1, 2, figsize=(18, 10))
         self.fig.canvas.set_window_title('SciKit-SurgeryF.R.E.D.')
         self.stats_plot = PlotRegStatistics(self.subplot[1])
