@@ -60,6 +60,7 @@ class RegistrationGame:
 
         self.intialise_registration()
 
+        plt.rcParams['keymap.all_axes'].remove('a')
         _ = self.fig.canvas.mpl_connect('key_press_event',
                                         self.keypress_event)
 
