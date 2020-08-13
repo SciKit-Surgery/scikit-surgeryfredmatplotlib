@@ -31,10 +31,10 @@ class InteractiveRegistration(FredCommon):
 
         self.logger = Logger(log_config)
 
-        self.intialise_registration()
+        self.initialise_registration()
 
-        self.cid = self.fig.canvas.mpl_connect('key_press_event',
-                                               self.keypress_event)
+        _ = self.fig.canvas.mpl_connect('key_press_event',
+                                        self.keypress_event)
 
         plt.show()
 
@@ -44,3 +44,10 @@ class InteractiveRegistration(FredCommon):
         """
         if event.key == 'r':
             self.intialise_registration()
+
+    def intialise_registration(self):
+        """
+        sets up the registration
+        """
+        super().initialise_registration()
+        self.fig.canvas.draw()

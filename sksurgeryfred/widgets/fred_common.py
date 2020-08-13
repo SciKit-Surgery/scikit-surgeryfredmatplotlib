@@ -47,7 +47,7 @@ class FredCommon:
 
         self.logger = None
 
-    def intialise_registration(self):
+    def initialise_registration(self):
         """
         sets up the registration
         """
@@ -76,5 +76,4 @@ class FredCommon:
                                                fixed_fle, moving_fle)
 
         self.mouse_int.reset_fiducials(fixed_fle_eavs)
-
-        self.fig.canvas.draw()
+        return target_point
