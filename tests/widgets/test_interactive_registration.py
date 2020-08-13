@@ -3,7 +3,7 @@
 """Fiducial Registration Educational Demonstration tests"""
 
 from sksurgeryfred.widgets.interactive_registration \
-                import InteractiveRegistration as ireg 
+                import InteractiveRegistration as ireg
 
 
 def test_int_reg():
@@ -13,6 +13,6 @@ def test_int_reg():
 
     class FakeEvent:
         """A fake key press event"""
-        key='r'
+        key = 'r'
 
     int_reg.keypress_event(FakeEvent)
