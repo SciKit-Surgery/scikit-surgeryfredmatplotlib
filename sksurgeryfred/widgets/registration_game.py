@@ -52,7 +52,6 @@ class RegistrationGame(FredCommon):
         """
         handle a key press event
         """
-
         if event.key == "up":
             margin = self.ablation.increase_margin()
             self.stats_plot.update_margin_stats(margin)
@@ -84,7 +83,7 @@ class RegistrationGame(FredCommon):
                                 margin_text, repeats_text)
                         self.repeats -= 1
                         self.stats_plot.update_repeats(self.repeats)
-                        self.intialise_registration()
+                        self.initialise_registration()
                     else:
                         self._game_over()
                     self.fig.canvas.draw()
@@ -102,12 +101,11 @@ class RegistrationGame(FredCommon):
 
         self.fig.canvas.draw()
 
-    def intialise_registration(self):
+    def initialise_registration(self):
         """
         sets up the registration
         """
-        target_point = super().initialise_registration()
-
+        target_point = super().init_reg()
         self.ablation.setup(target=target_point,
                             target_radius=10.0)
 

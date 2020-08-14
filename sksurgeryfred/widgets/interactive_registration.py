@@ -43,11 +43,11 @@ class InteractiveRegistration(FredCommon):
         handle a key press event
         """
         if event.key == 'r':
-            self.intialise_registration()
+            self.initialise_registration()
 
-    def intialise_registration(self):
+    def initialise_registration(self):
         """
         sets up the registration
         """
-        super().initialise_registration()
+        super().init_reg()
         self.fig.canvas.draw()
