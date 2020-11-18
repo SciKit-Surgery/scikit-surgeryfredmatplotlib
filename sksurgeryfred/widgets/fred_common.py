@@ -7,13 +7,14 @@ from matplotlib import use
 import skimage.io
 import numpy as np
 
-from sksurgeryfred.algorithms.fred import make_target_point, \
+from sksurgeryfredbe.algorithms.point_based_reg import PointBasedRegistration
+from sksurgeryfredbe.algorithms.fit_contour import find_outer_contour
+from sksurgeryfredbe.algorithms.errors import expected_absolute_value
+from sksurgeryfredbe.algorithms.fred import make_target_point, \
                 AddFiducialMarker
+
 from sksurgeryfred.plotting.interactive_plots import PlotRegistrations, \
                 PlotRegStatistics
-from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
-from sksurgeryfred.algorithms.fit_contour import find_outer_contour
-from sksurgeryfred.algorithms.errors import expected_absolute_value
 
 class FredCommon:
     """

@@ -4,7 +4,7 @@ The main widget for the interactive registration part of scikit-surgeryFRED
 
 import matplotlib.pyplot as plt
 
-from sksurgeryfred.logging.fred_logger import Logger
+from sksurgeryfredbe.logging.fred_logger import Logger
 from sksurgeryfred.widgets.fred_common import FredCommon
 
 class InteractiveRegistration(FredCommon):

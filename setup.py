@@ -53,11 +53,9 @@ setup(
     install_requires=[
             'numpy',
             'matplotlib',
-            'scikit-image>0.15',
-            'scipy',
+            'scikit-surgeryfredbackend',
             'ipykernel',
             'nbsphinx',
-            'scikit-surgerycore>0.6.5',
     ],
 
     entry_points={
