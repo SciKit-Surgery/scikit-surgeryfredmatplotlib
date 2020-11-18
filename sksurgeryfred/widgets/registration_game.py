@@ -5,8 +5,8 @@ The main widget for the interactive registration part of scikit-surgeryFRED
 from random import shuffle
 import matplotlib.pyplot as plt
 
-from sksurgeryfred.algorithms.ablation import Ablator
-from sksurgeryfred.logging.fred_logger import Logger
+from sksurgeryfredbe.algorithms.ablation import Ablator
+from sksurgeryfredbe.logging.fred_logger import Logger
 from sksurgeryfred.widgets.fred_common import FredCommon
 
 class RegistrationGame(FredCommon):
@@ -159,4 +159,5 @@ class VisibilitySettings:
             return self.state_list.pop()
         except IndexError:
             raise IndexError("You tried to get a value from" +
-                             "VisibilitySettings, but the buffer is emptied.")
+                             "VisibilitySettings, but" +
+                             "the buffer is emptied.") from IndexError
