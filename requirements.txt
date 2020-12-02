@@ -4,6 +4,6 @@
 # doc/requirements.rst
 numpy
 matplotlib
-scikit-surgeryfredbackend
+scikit-surgeryfred
 ipykernel
 nbsphinx

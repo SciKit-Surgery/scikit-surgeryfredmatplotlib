@@ -1,2 +1,2 @@
 include versioneer.py
-include sksurgeryfred/_version.py
+include sksurgeryfredmatplotlib/_version.py
