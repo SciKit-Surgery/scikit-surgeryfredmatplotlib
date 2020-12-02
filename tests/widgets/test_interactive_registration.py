@@ -2,7 +2,7 @@
 
 """Fiducial Registration Educational Demonstration tests"""
 
-from sksurgeryfred.widgets.interactive_registration \
+from sksurgeryfredmatplotlib.widgets.interactive_registration \
                 import InteractiveRegistration as ireg
 
 

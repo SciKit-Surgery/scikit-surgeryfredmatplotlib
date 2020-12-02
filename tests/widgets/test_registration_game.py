@@ -2,7 +2,7 @@
 
 """Fiducial Registration Educational Demonstration tests"""
 
-from sksurgeryfred.widgets.registration_game \
+from sksurgeryfredmatplotlib.widgets.registration_game \
                 import RegistrationGame as rgame
 
 

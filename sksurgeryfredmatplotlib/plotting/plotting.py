@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib import use
 from numpy import polyfit, corrcoef, array
 
-from sksurgeryfredbe.logging.fred_logger import Logger
+from sksurgeryfred.logging.fred_logger import Logger
 
 def _plot_subresults(subplot, x_values, y_values):
     """

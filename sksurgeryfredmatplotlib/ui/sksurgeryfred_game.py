@@ -2,7 +2,7 @@
 
 """User interfaces for sksurgeryFRED"""
 
-from sksurgeryfred.widgets.registration_game \
+from sksurgeryfredmatplotlib.widgets.registration_game \
                 import RegistrationGame
 
 def run_demo(image):

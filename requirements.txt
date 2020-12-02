@@ -5,6 +5,6 @@
 numpy
 matplotlib
 scikit-image>0.15
-scikit-surgeryfred
+scikit-surgeryfred>=0.0.7
 ipykernel
 nbsphinx

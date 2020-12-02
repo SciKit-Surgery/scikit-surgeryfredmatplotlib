@@ -4,8 +4,8 @@
 
 
 import argparse
-from sksurgeryfred import __version__
-from sksurgeryfred.ui.sksurgeryfred_plotter import run_plotter
+from sksurgeryfredmatplotlib import __version__
+from sksurgeryfredmatplotlib.ui.sksurgeryfred_plotter import run_plotter
 
 
 def main(args=None):

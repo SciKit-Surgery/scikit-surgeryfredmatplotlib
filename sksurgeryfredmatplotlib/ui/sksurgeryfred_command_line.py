@@ -4,8 +4,8 @@
 
 
 import argparse
-from sksurgeryfred import __version__
-from sksurgeryfred.ui.sksurgeryfred import run_demo
+from sksurgeryfredmatplotlib import __version__
+from sksurgeryfredmatplotlib.ui.sksurgeryfred import run_demo
 
 
 def main(args=None):
