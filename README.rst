@@ -1,22 +1,22 @@
 Fiducial Registration Educational Demonstration
 ===============================================
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/raw/master/project-icon.png
+.. image:: https://github.com/UCL/scikit-surgeryfredmatplotlib/raw/master/project-icon.png
    :height: 128px
    :width: 128px
-   :target: https://github.com/UCL/scikit-surgeryfred
+   :target: https://github.com/UCL/scikit-surgeryfredmatplotlib
    :alt: Logo
 
-.. image:: https://github.com/UCL/scikit-surgeryfred/workflows/.github/workflows/ci.yml/badge.svg
-   :target: https://github.com/UCL/scikit-surgeryfred/actions
+.. image:: https://github.com/UCL/scikit-surgeryfredmatplotlib/workflows/.github/workflows/ci.yml/badge.svg
+   :target: https://github.com/UCL/scikit-surgeryfredmatplotlib/actions
    :alt: GitHub Actions CI status
 
-.. image:: https://coveralls.io/repos/github/UCL/scikit-surgeryfred/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/UCL/scikit-surgeryfred?branch=master
+.. image:: https://coveralls.io/repos/github/UCL/scikit-surgeryfredmatplotlib/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/UCL/scikit-surgeryfredmatplotlib?branch=master
     :alt: Test coverage
 
-.. image:: https://readthedocs.org/projects/scikit-surgeryfred/badge/?version=latest
-    :target: http://scikit-surgeryfred.readthedocs.io/en/latest/?badge=latest
+.. image:: https://readthedocs.org/projects/scikit-surgeryfredmatplotlib/badge/?version=latest
+    :target: http://scikit-surgeryfredmatplotlib.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
 .. image:: https://img.shields.io/badge/Cite-SciKit--Surgery-informational
@@ -36,6 +36,8 @@ Fiducial Registration Educational Demonstration
    :alt: Video Demonstration of Game on YouTube
 
 Author: Stephen Thompson
+ 
+This is the Fiducial Registration Educational Demonstration (SciKit-SurgeryFRED). This version uses a graphical user interface based on Matplotlib and has been superseded by the browser based version at `SciKit-SurgeryFRED`_.
 
 Fiducial Registration Educational Demonstration (SciKit-SurgeryFRED) is part of the `SciKit-Surgery`_ software project, developed at the `Wellcome EPSRC Centre for Interventional and Surgical Sciences`_, part of `University College London (UCL)`_.
 
@@ -65,7 +67,7 @@ You can clone the repository using the following command:
 
 ::
 
-    git clone https://github.com/UCL/scikit-surgeryfred
+    git clone https://github.com/UCL/scikit-surgeryfredmatplotlib
 
 
 Running tests
@@ -85,7 +87,7 @@ This code conforms to the PEP8 standard. Pylint can be used to analyse the code:
 ::
 
     pip install pylint
-    pylint --rcfile=tests/pylintrc sksurgeryfred
+    pylint --rcfile=tests/pylintrc sksurgeryfredmatplotlib
 
 
 Installing
@@ -95,7 +97,7 @@ You can pip install directly from the repository as follows:
 
 ::
 
-    pip install git+https://github.com/UCL/scikit-surgeryfred
+    pip install git+https://github.com/UCL/scikit-surgeryfredmatplotlib
 
 
 
@@ -126,12 +128,13 @@ Supported by `Wellcome`_ and `EPSRC`_.
 
 
 .. _`Wellcome EPSRC Centre for Interventional and Surgical Sciences`: http://www.ucl.ac.uk/weiss
-.. _`source code repository`: https://github.com/UCL/scikit-surgeryfred
-.. _`Documentation`: https://scikit-surgeryfred.readthedocs.io
-.. _`SciKit-Surgery`: https://github.com/UCL/scikit-surgery/wiki
+.. _`source code repository`: https://github.com/UCL/scikit-surgeryfredmatplotlib
+.. _`Documentation`: https://scikit-surgeryfredmatplotlib.readthedocs.io
+.. _`SciKit-Surgery`: http://scikit-surgery.org
+.. _`SciKit-SurgeryFRED`: https://github.com/UCL/scikit-surgeryfred
 .. _`University College London (UCL)`: http://www.ucl.ac.uk/
 .. _`Wellcome`: https://wellcome.ac.uk/
 .. _`EPSRC`: https://www.epsrc.ac.uk/
-.. _`contributing guidelines`: https://github.com/UCL/scikit-surgeryfred/blob/master/CONTRIBUTING.rst
-.. _`license file`: https://github.com/UCL/scikit-surgeryfred/blob/master/LICENSE
+.. _`contributing guidelines`: https://github.com/UCL/scikit-surgeryfredmatplotlib/blob/master/CONTRIBUTING.rst
+.. _`license file`: https://github.com/UCL/scikit-surgeryfredmatplotlib/blob/master/LICENSE
 

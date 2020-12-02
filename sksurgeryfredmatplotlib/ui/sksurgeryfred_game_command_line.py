@@ -4,8 +4,8 @@
 
 
 import argparse
-from sksurgeryfred import __version__
-from sksurgeryfred.ui.sksurgeryfred_plotter import run_plotter
+from sksurgeryfredmatplotlib import __version__
+from sksurgeryfredmatplotlib.ui.sksurgeryfred_game import run_demo
 
 
 def main(args=None):
@@ -14,13 +14,12 @@ def main(args=None):
     application"""
 
     parser = argparse.ArgumentParser(
-        description=('Plot Results for Fiducial Registration' +
-                     'Educational Demonstration'))
+        description='Fiducial Registration Educational Demonstration - Game')
 
     ## ADD POSITIONAL ARGUMENTS
-    parser.add_argument("logfile",
+    parser.add_argument("image",
                         type=str,
-                        help="Log file name")
+                        help="Image file name")
 
     version_string = __version__
     friendly_version_string = version_string if version_string else 'unknown'
@@ -32,4 +31,4 @@ def main(args=None):
 
     args = parser.parse_args(args)
 
-    run_plotter(args.logfile)
+    run_demo(args.image)

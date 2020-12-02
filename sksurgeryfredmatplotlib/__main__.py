@@ -14,7 +14,7 @@ if __name__ == "__main__" and not __package__:
     sys.path.append(path.dirname(path.dirname(__file__)))
 
 # pylint: disable=wrong-import-position
-from sksurgeryfred.ui.sksurgeryfred_command_line import main
+from sksurgeryfredmatplotlib.ui.sksurgeryfred_command_line import main
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

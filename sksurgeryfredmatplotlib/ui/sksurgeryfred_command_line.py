@@ -4,8 +4,8 @@
 
 
 import argparse
-from sksurgeryfred import __version__
-from sksurgeryfred.ui.sksurgeryfred_game import run_demo
+from sksurgeryfredmatplotlib import __version__
+from sksurgeryfredmatplotlib.ui.sksurgeryfred import run_demo
 
 
 def main(args=None):
@@ -14,7 +14,7 @@ def main(args=None):
     application"""
 
     parser = argparse.ArgumentParser(
-        description='Fiducial Registration Educational Demonstration - Game')
+        description='Fiducial Registration Educational Demonstration')
 
     ## ADD POSITIONAL ARGUMENTS
     parser.add_argument("image",

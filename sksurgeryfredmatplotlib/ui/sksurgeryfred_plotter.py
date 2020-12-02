@@ -2,7 +2,7 @@
 
 """User interfaces for sksurgeryFRED"""
 
-from sksurgeryfred.plotting.plotting import \
+from sksurgeryfredmatplotlib.plotting.plotting import \
                 plot_results
 
 def run_plotter(logfile):
