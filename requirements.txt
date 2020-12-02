@@ -4,6 +4,7 @@
 # doc/requirements.rst
 numpy
 matplotlib
+scikit-image>0.15
 scikit-surgeryfred
 ipykernel
 nbsphinx
