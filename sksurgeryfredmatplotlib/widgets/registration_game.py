@@ -6,7 +6,7 @@ from random import shuffle
 import matplotlib.pyplot as plt
 
 from sksurgeryfred.algorithms.ablation import Ablator
-from sksurgeryfred.logging.fred_logger import Logger
+from sksurgeryfredmatplotlib.logging.fred_logger import Logger
 from sksurgeryfredmatplotlib.widgets.fred_common import FredCommon
 
 class RegistrationGame(FredCommon):
