@@ -9,10 +9,10 @@ import numpy as np
 
 from sksurgeryfred.algorithms.point_based_reg import PointBasedRegistration
 from sksurgeryfred.algorithms.errors import expected_absolute_value
-from sksurgeryfred.algorithms.fred import make_target_point, \
-                AddFiducialMarker
+from sksurgeryfred.algorithms.fred import make_target_point
 
 from sksurgeryfredmatplotlib.algorithms.fit_contour import find_outer_contour
+from sksurgeryfredmatplotlib.algorithms.add_fiducial import AddFiducialMarker
 from sksurgeryfredmatplotlib.plotting.interactive_plots import \
                 PlotRegistrations, PlotRegStatistics
 
