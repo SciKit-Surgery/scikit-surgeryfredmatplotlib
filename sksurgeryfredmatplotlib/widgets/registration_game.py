@@ -5,7 +5,7 @@ The main widget for the interactive registration part of scikit-surgeryFRED
 from random import shuffle
 import matplotlib.pyplot as plt
 
-from sksurgeryfred.algorithms.ablation import Ablator
+from sksurgeryfredmatplotlib.algorithms.ablation import Ablator
 from sksurgeryfredmatplotlib.logging.fred_logger import Logger
 from sksurgeryfredmatplotlib.widgets.fred_common import FredCommon
 
