@@ -54,7 +54,7 @@ setup(
             'numpy',
             'matplotlib',
             'scikit-image>0.15',
-            'scikit-surgeryfred>=0.0.7',
+            'scikit-surgeryfred>=0.0.9',
             'ipykernel',
             'nbsphinx',
     ],

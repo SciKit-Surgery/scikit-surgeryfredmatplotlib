@@ -1,11 +1,11 @@
 [run]
 omit = 
-        ./sksurgeryfred/_version.py
-        ./sksurgeryfred/__init__.py
-	./sksurgeryfred/algorithms/__init__.py
-	./sksurgeryfred/logging/__init__.py
-	./sksurgeryfred/plotting/__init__.py
-	./sksurgeryfred/widgets/__init__.py
-	./sksurgeryfred/ui/__init__.py
-        ./sksurgeryfred/__main__.py
-        ./sksurgeryfred/ui/*
+        ./sksurgeryfredmatplotlib/_version.py
+        ./sksurgeryfredmatplotlib/__init__.py
+	./sksurgeryfredmatplotlib/algorithms/__init__.py
+	./sksurgeryfredmatplotlib/logging/__init__.py
+	./sksurgeryfredmatplotlib/plotting/__init__.py
+	./sksurgeryfredmatplotlib/widgets/__init__.py
+	./sksurgeryfredmatplotlib/ui/__init__.py
+        ./sksurgeryfredmatplotlib/__main__.py
+        ./sksurgeryfredmatplotlib/ui/*
