@@ -90,7 +90,7 @@ class Logger():
         no_fids = []
 
         samples = 0
-        with open(self.log_file_name, mode='r') as csv_file:
+        with open(self.log_file_name, mode='r', encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             for row in csv_reader:
                 try:
