@@ -3,7 +3,7 @@
 from logging import getLogger, FileHandler, Formatter, INFO
 import csv
 from sksurgeryfred import __version__
-
+#pylint:disable=consider-using-f-string
 class Logger():
     """
     Implements logging functionality for sksurgeryfred.
