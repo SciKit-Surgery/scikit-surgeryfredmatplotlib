@@ -1,18 +1,20 @@
 Fiducial Registration Educational Demonstration
 ===============================================
 
-.. image:: https://github.com/UCL/scikit-surgeryfredmatplotlib/raw/master/project-icon.png
+.. image:: https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib/raw/master/project-icon.png
    :height: 128px
    :width: 128px
-   :target: https://github.com/UCL/scikit-surgeryfredmatplotlib
+   :target: https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib
    :alt: Logo
 
-.. image:: https://github.com/UCL/scikit-surgeryfredmatplotlib/workflows/.github/workflows/ci.yml/badge.svg
-   :target: https://github.com/UCL/scikit-surgeryfredmatplotlib/actions
+|
+
+.. image:: https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib/workflows/.github/workflows/ci.yml/badge.svg
+   :target: https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib/actions
    :alt: GitHub Actions CI status
 
-.. image:: https://coveralls.io/repos/github/UCL/scikit-surgeryfredmatplotlib/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/UCL/scikit-surgeryfredmatplotlib?branch=master
+.. image:: https://coveralls.io/repos/github/SciKit-Surgery/scikit-surgeryfredmatplotlib/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/SciKit-Surgery/scikit-surgeryfredmatplotlib?branch=master
     :alt: Test coverage
 
 .. image:: https://readthedocs.org/projects/scikit-surgeryfredmatplotlib/badge/?version=latest
@@ -34,6 +36,14 @@ Fiducial Registration Educational Demonstration
 .. image:: https://img.shields.io/badge/Video-Game-blueviolet
    :target: https://www.youtube.com/watch?v=ansH1w2ST-g
    :alt: Video Demonstration of Game on YouTube
+
+.. image:: https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg
+   :target: CODE_OF_CONDUCT.md
+
+.. image:: https://img.shields.io/twitter/follow/scikit_surgery?style=social
+   :target: https://twitter.com/scikit_surgery?ref_src=twsrc%5Etfw
+   :alt: Follow scikit_surgery on twitter
+
 
 Author: Stephen Thompson
  
@@ -67,7 +77,7 @@ You can clone the repository using the following command:
 
 ::
 
-    git clone https://github.com/UCL/scikit-surgeryfredmatplotlib
+    git clone https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib
 
 
 Running tests
@@ -97,7 +107,7 @@ You can pip install directly from the repository as follows:
 
 ::
 
-    pip install git+https://github.com/UCL/scikit-surgeryfredmatplotlib
+    pip install git+https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib
 
 
 
@@ -128,13 +138,13 @@ Supported by `Wellcome`_ and `EPSRC`_.
 
 
 .. _`Wellcome EPSRC Centre for Interventional and Surgical Sciences`: http://www.ucl.ac.uk/weiss
-.. _`source code repository`: https://github.com/UCL/scikit-surgeryfredmatplotlib
+.. _`source code repository`: https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib
 .. _`Documentation`: https://scikit-surgeryfredmatplotlib.readthedocs.io
-.. _`SciKit-Surgery`: http://scikit-surgery.org
-.. _`SciKit-SurgeryFRED`: https://github.com/UCL/scikit-surgeryfred
+.. _`SciKit-Surgery`: https://github.com/SciKit-Surgery
+.. _`SciKit-SurgeryFRED`: https://github.com/SciKit-Surgery/scikit-surgeryfred
 .. _`University College London (UCL)`: http://www.ucl.ac.uk/
 .. _`Wellcome`: https://wellcome.ac.uk/
 .. _`EPSRC`: https://www.epsrc.ac.uk/
-.. _`contributing guidelines`: https://github.com/UCL/scikit-surgeryfredmatplotlib/blob/master/CONTRIBUTING.rst
-.. _`license file`: https://github.com/UCL/scikit-surgeryfredmatplotlib/blob/master/LICENSE
+.. _`contributing guidelines`: https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib/blob/master/CONTRIBUTING.rst
+.. _`license file`: https://github.com/SciKit-Surgery/scikit-surgeryfredmatplotlib/blob/master/LICENSE
 
