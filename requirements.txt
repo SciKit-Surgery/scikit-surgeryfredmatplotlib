@@ -3,7 +3,7 @@
 # confused with the software requirements, which are listed in
 # doc/requirements.rst
 numpy
-matplotlib
+matplotlib<3.3.3
 scikit-image>0.15
 scikit-surgeryfred>=0.0.9
 ipykernel

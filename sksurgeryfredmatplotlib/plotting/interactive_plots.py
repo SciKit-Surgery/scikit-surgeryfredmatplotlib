@@ -1,7 +1,7 @@
 """Functions to support MedPhys Taught Module workshop on
 calibration and tracking
 """
-
+#pylint:disable=consider-using-f-string
 class PlotRegStatistics():
     """
     writes the registration statistics

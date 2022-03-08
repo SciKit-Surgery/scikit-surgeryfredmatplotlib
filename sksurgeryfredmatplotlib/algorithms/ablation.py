@@ -44,8 +44,7 @@ class Ablator():
         """
         if self.ready:
             self.margin -= self.margin_increment
-            if self.margin <= 0.0:
-                self.margin = 0.0
+            self.margin = max(self.margin, 0.0)
             return self.margin
         return 0.0
 

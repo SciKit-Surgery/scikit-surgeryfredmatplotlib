@@ -6,7 +6,7 @@ from matplotlib import use
 from numpy import polyfit, corrcoef, array
 
 from sksurgeryfredmatplotlib.logging.fred_logger import Logger
-
+#pylint:disable=consider-using-f-string
 def _plot_subresults(subplot, x_values, y_values):
     """
     scatter plot, fitted line, and correlation coefficient
